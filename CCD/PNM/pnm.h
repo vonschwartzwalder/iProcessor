@@ -1,0 +1,352 @@
+//---------------------------------------------------------------------
+// 
+//---------------------------------------------------------------------
+
+#ifndef PNM_H
+#define PNM_H
+
+// ------------------------
+// PNM class declaration
+// ------------------------
+
+// includes
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <list>
+using namespace std;
+
+
+// -------------------------------------
+// PNM_Point class
+// -------------------------------------
+class PNM_Point {
+public:
+
+  // constructors
+  PNM_Point();
+  PNM_Point(const PNM_Point &p);
+  PNM_Point(const int x, const int y);
+  PNM_Point(const int x, const int y, const int d);
+
+  // destructor
+  ~PNM_Point();
+
+  // I/O
+  friend ostream &operator<<(ostream &out, PNM_Point &p);
+  ostream &write(ostream &out);
+  friend istream &operator<<(istream &in, PNM_Point &p);
+  istream &read(istream &in);
+
+  // methods
+
+  // operators
+  bool operator<(PNM_Point &p);
+  bool operator==(PNM_Point &p);
+  bool operator>(PNM_Point &p);
+  PNM_Point &operator+(PNM_Point &p);
+  PNM_Point &operator-(PNM_Point &p);
+  PNM_Point &operator*(PNM_Point &p);
+  PNM_Point &operator/(PNM_Point &p);
+  PNM_Point &operator+(int v);
+  PNM_Point &operator-(int v);
+  PNM_Point &operator*(int v);
+  PNM_Point &operator/(int v);
+
+  // data
+  int x;
+  int y;
+
+};
+
+istream &operator>>(istream &in, PNM_Point &p);
+
+
+// -------------------------------------
+// PNM_Color
+// -------------------------------------
+// Rec. 709 Chromaticities (D65 white point)
+//
+//    R      G      B      white
+// x  0.640  0.300  0.150  0.3127
+// y  0.330  0.600  0.060  0.3290
+// z  0.030  0.100  0.790  0.3582
+//
+// Rec. 709 Conversions
+//
+// RGB to XYZ
+// [X]   [ 0.412453  0.357580  0.180423]   [R]
+// [Y] = [ 0.212671  0.715160  0.072169] * [G]
+// [Z]   [ 0.019334  0.119193  0.950227]   [B]
+//
+// XYZ to RGB
+// [R]   [ 3.240479 -1.537150 -0.498535]   [X]
+// [G] = [-0.969256  1.875992  0.041556] * [Y]
+// [B]   [ 0.055648 -0.204043  1.057311]   [Z]
+//
+// RGB to HSV
+//    var_R = ( R / 255 )                     //RGB from 0 to 255
+//    var_G = ( G / 255 )
+//    var_B = ( B / 255 )
+//
+//    var_Min = min( var_R, var_G, var_B )    //Min. value of RGB
+//    var_Max = max( var_R, var_G, var_B )    //Max. value of RGB
+//    del_Max = var_Max - var_Min             //Delta RGB value 
+//
+//    V = var_Max
+//
+//    if ( del_Max == 0 )                     //This is a gray, no chroma...
+//    {
+//       H = 0                                //HSV results from 0 to 1
+//       S = 0
+//    }
+//    else                                    //Chromatic data...
+//    {
+//       S = del_Max / var_Max
+//
+//       del_R = ( ( ( var_Max - var_R ) / 6 ) + ( del_Max / 2 ) ) / del_Max
+//       del_G = ( ( ( var_Max - var_G ) / 6 ) + ( del_Max / 2 ) ) / del_Max
+//       del_B = ( ( ( var_Max - var_B ) / 6 ) + ( del_Max / 2 ) ) / del_Max
+//
+//       if      ( var_R == var_Max ) H = del_B - del_G
+//       else if ( var_G == var_Max ) H = ( 1 / 3 ) + del_R - del_B
+//       else if ( var_B == var_Max ) H = ( 2 / 3 ) + del_G - del_R
+//
+//       if ( H < 0 ) H += 1
+//       if ( H > 1 ) H -= 1
+//    }
+// -------------------------------------
+
+class PNM_Color {
+public:
+  PNM_Color() { r = 0; g = 0; b = 0; }
+  PNM_Color(int nr, int ng, int nb) { r = nr; g = ng; b = nb; }
+  int red() { return r; }
+  int green() { return g; }
+  int blue() { return b; }
+  int gray() { return (int)(r * 0.299 + g * 0.587 + b * 0.114); }
+  bool bit() { return !((r == 0) && (g == 0) && (b == 0)); }
+  void red(int nr) { r = nr; }
+  void green(int ng) { g = ng; }
+  void blue(int nb) { b = nb; }
+  void gray(int v) { r = v; g = v; b = v; }
+  void bit(bool v) { r = (v ? 255 : 0); g = (v ? 255 : 0); b = (v ? 255 : 0); }
+  void set(int nr, int ng, int nb) { r = nr; g = ng; b = nb; }
+  bool operator==(const PNM_Color &c) { return (r == c.r && g == c.g && b == c.b); }
+  bool operator!=(const PNM_Color &c) { return !(r == c.r && g == c.g && b == c.b); }
+  bool operator<(const PNM_Color &c) { return (gray() < (int)(c.r*0.299 + c.g*0.587 + c.b*0.114)); }
+  bool operator>(const PNM_Color &c) { return (gray() > (int)(c.r*0.299 + c.g*0.587 + c.b*0.114)); }
+  PNM_Color &operator+(double i) {
+    PNM_Color *c = new PNM_Color();
+    c->r = (int)(r + i);
+    c->g = (int)(g + i);
+    c->b = (int)(b + i);
+    return *c;
+  }
+  PNM_Color &operator-(double i) {
+    PNM_Color *c = new PNM_Color();
+    c->r = (int)(r - i);
+    c->g = (int)(g - i);
+    c->b = (int)(b - i);
+    return *c;
+  }
+  PNM_Color &operator*(double i) {
+    PNM_Color *c = new PNM_Color();
+    c->r = (int)(r * i);
+    c->g = (int)(g * i);
+    c->b = (int)(b * i);
+    return *c;
+  }
+  PNM_Color &operator/(double i) {
+    PNM_Color *c = new PNM_Color();
+    c->r = (int)(r / i);
+    c->g = (int)(g / i);
+    c->b = (int)(b / i);
+    return *c;
+  }
+private:
+  int r;
+  int g;
+  int b;
+};
+
+// -------------------------------------
+// PNM exceptions
+// -------------------------------------
+class PNM_Exception {
+public:
+  PNM_Exception() { error = ""; }
+  PNM_Exception(string s) { error = s; }
+  PNM_Exception(char *s) { error = s; }
+  string what() {
+    return error;
+  }
+private:
+  string error;
+};
+
+class PNM_IOException : PNM_Exception {
+public:
+  PNM_IOException() { error = "I/O error"; }
+  PNM_IOException(string s) { error = s; }
+  PNM_IOException(char *s) { error = s; }
+  string what() {
+    return error;
+  }
+private:
+  string error;
+};
+
+class PNM_ArrayException : PNM_Exception {
+public:
+  PNM_ArrayException() { error = "Array subscript out of bounds"; }
+  PNM_ArrayException(string s) { error = s; }
+  PNM_ArrayException(char *s) { error = s; }
+  PNM_ArrayException(int x, int y) {
+    ostringstream sout;
+    sout << "Array subscript (" << x << "," << y << ") out of bounds";
+    error = sout.str();
+  }
+  PNM_ArrayException(double x, double y) {
+    ostringstream sout;
+    sout << "Array subscript (" << x << "," << y << ") out of bounds";
+    error = sout.str();
+  }
+  string what() {
+    return error;
+  }
+private:
+  string error;
+};
+
+
+// -------------------------------------
+// PNM class
+// -------------------------------------
+class PNM {
+
+public:
+
+  // image types
+  static const int typeNON;
+  static const int typePBM;
+  static const int typePGM;
+  static const int typePPM;
+
+  // interpolation methods
+  static const int NEIGHBOR;
+  static const int LINEAR;
+  static const int CUBIC;
+
+  // constructors
+  PNM();
+  PNM(const PNM &p);
+  PNM(char *filename);
+  PNM(string filename);
+  PNM(int ncols, int nrows, int type);
+
+  // destructor
+  ~PNM();
+
+  // I/O
+  void read(char *filename);
+  void read(string filename);
+  void read(istream &instream);
+  void write(char *filename);
+  void write(string filename);
+  void write(ostream &outstream);
+
+  // query
+  bool raw() { return _raw; }
+  bool pbm() { return (_type == typePBM) ? true : false; }
+  bool pgm() { return (_type == typePGM) ? true : false; }
+  bool ppm() { return (_type == typePPM) ? true : false; }
+  int type() { return _type; }
+  int threshold() { return _threshold; }
+  int max_value() { return _max_value; }
+  int rows() { return _rows; }
+  int cols() { return _cols; }
+  int interpolationMethod() { return _interpolationMethod; }
+
+  // set attributes
+  bool raw(bool val) {
+    bool old = _raw;
+    _raw = val;
+    return old;
+  }
+
+  int threshold(int val) {
+    int old = _threshold;
+    _threshold = val;
+    return old;
+  }
+
+  int max_value(int val) {
+    int old = _max_value;
+    _max_value = val;
+    return old;
+  }
+
+  int interpolationMethod(int val) {
+    int old = _interpolationMethod;
+    _interpolationMethod = val;
+    return old;
+  }
+
+  // get a pixel value
+  bool      bit(int col, int row);
+  bool      bit(double col, double row);
+  int       gray(int col, int row);
+  int       gray(double col, double row);
+  PNM_Color color(int col, int row);
+  PNM_Color color(double col, double row);
+
+  // set a pixel value
+  bool      bit(int col, int row, bool val);
+  bool      bit(double col, double row, bool val);
+  int       gray(int col, int row, int val);
+  int       gray(double col, double row, int val);
+  PNM_Color color(int col, int row, PNM_Color val);
+  PNM_Color color(double col, double row, PNM_Color val);
+
+  // graphic operations
+  void drawLine(PNM_Point p0, PNM_Point p1, PNM_Color color);
+  void drawLine(int scol, int srow, int ecol, int erow, PNM_Color color);
+  void drawLine(double scol, double srow, double ecol, double erow, PNM_Color color);
+  void drawPolygon(list<PNM_Point> polygon, PNM_Color color);
+  void drawPolygon(list<PNM_Point> polygon, PNM_Color lc, PNM_Color fc);
+  
+  // operators
+  PNM &operator=(PNM p);
+  PNM &operator=(PNM_Color c);
+  PNM &operator=(int v);
+  PNM &operator=(bool v);
+  
+  // other functions
+  void newImage(int t);
+  void deleteImage(int t);
+  bool valid(const int col, const int row);
+  bool valid(const double col, const double row);
+  void convert(int type);
+  void clear();
+
+private:
+  bool      _raw;
+  int       _rows;
+  int       _cols;
+  int       _max_value;
+  int       _type;
+  int       _interpolationMethod;
+  bool      **bit_image;
+  int       **gray_image;
+  PNM_Color **color_image;
+  int       _bit;
+  int       _gray;
+  PNM_Color _color;
+  int       _threshold;
+
+};
+
+#endif
+

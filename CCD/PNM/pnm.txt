@@ -1,0 +1,128 @@
+This is the PNM library.
+
+Usage: -L/usr/local/lib -lpnm
+
+libpnm provides a simple c++ class for access to PBM, PGM and PPM files.
+There is no dependence upon any other external library.  Both RAW and ASCII
+file types are supported for reading and writing.
+
+Constants:
+
+const int PNM::typeNON = 0;
+const int PNM::typePBM = 1;
+const int PNM::typePGM = 2;
+const int PNM::typePPM = 3;
+
+These constants are used by the PNM library to keep track of the file type.
+
+Constructors:
+
+PNM::PNM()
+
+The empty constructor: contains no image data, and the type is typeNON.
+
+PNM::PNM(const PNM &p)
+
+The copy constructor: this produces a deep copy of the image data.
+
+PNM::PNM(char *filename)
+PNM::PNM(string filename)
+
+File name constructors: these read a file into the image data.
+
+PNM::PNM(int ncols, int nrows, int type)
+
+This creates a new blank image of the specified size.
+
+Pixel Access:
+
+bool PNM::bit(int col, int row)
+int PNM::gray(int col, int row)
+PNM_Color PNM::color(int col, int row)
+
+These functions write a pixel value to the specified location in the image.
+The original pixel value is returned.  The value type is silently converted
+to the internal image type.  In other words, if you write a color pixel (PPM)
+to a gray image (PGM), the color value is converted to gray and then
+written to the image data.
+
+bool PNM::bit(int col, int row, bool val)
+int PNM::gray(int col, int row, int val)
+PNM_Color PNM::color(int col, int row, PNM_Color val)
+
+These functions read a pixel value from a specified location in the image.
+The value is silently converted from the image data to the requested type.
+In other words, if you read a gray pixel (PGM) from a color image (PPM) the
+color value is converted to gray and returned.
+
+void PNM::clear()
+
+This clears the image data to 0.
+
+void PNM::convert(int type)
+
+This converts the internal image data to the specified type.
+
+File I/O:
+
+void PNM::read(const char *filename) 
+void PNM::read(string filename)
+void PNM::read(istream &instream)
+
+These functions read image data from the specified files or stream.  The 
+image type is determined from the file.
+
+void PNM::write(const char *filename)
+void PNM::write(string filename)
+void PNM::write(ostream &outstream)
+
+These functions write image dat to the specified files or stream.  The file
+type (PBM, PGM or PPM) and method (RAW or ASCII) are determined from image.
+
+Other functions:
+
+  bool raw()
+  bool pbm()
+  bool pgm()
+  bool ppm()
+
+These return true if the image is of the associated type.
+
+  int type()
+
+This returns the type of the image: one of typeNON, typePBM, typePGM or
+typePPM.
+
+  int threshold()
+  int max_value()
+  int rows()
+  int cols()
+
+These return the value of the associated attribute of the image.
+
+  bool raw(bool val)
+  int threshold(int val)
+  int max_value(int val)
+
+These functions allow setting of the associated attributes.  The orignal
+value is returned.
+
+The PNM_Color class:
+
+  PNM_Color()
+  PNM_Color(int nr, int ng, int nb)
+  int red()
+  int green()
+  int blue()
+  void red(int nr)
+  void green(int ng)
+  void blue(int nb)
+
+This class is the atomic pixel for a PPM image.
+
+There is a PNM_Exception class, and two subclasses: PNM_IOException and
+PNM_ArrayException.  All of these classes have a what() function that
+returns a string describing the error.  Any error in the PNM library will
+result in one of these classes being thrown.
+
+

@@ -1,0 +1,6 @@
+.gdb_history
+build/
+dist/
+doc/
+nbproject/
+test/
