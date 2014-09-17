@@ -113,9 +113,6 @@ protected:
 
 public:
 
-  // data members
-  string filename;
-
   // internal image
   PNM im;
 

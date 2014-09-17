@@ -1,5 +1,8 @@
 #include <algorithm>
+#include <vector>
 using namespace std;
+
+//#include <alloca.h>
 
 #include "image.h"
 
@@ -175,7 +178,8 @@ double Image::calc_mean_gray() {
 int Image::calc_median_gray() {
   int median = 0;
   int size = im.rows() * im.cols();
-  int array[size];
+  vector<int> array;
+  array.resize(size);
 
   // for each pixel
   int index = 0;
@@ -184,7 +188,7 @@ int Image::calc_median_gray() {
       array[index++] = im.gray(x,y);
     }
   }
-  sort(array, array + size);
+  sort(array.begin(), array.end());
   return(array[(im.rows()*im.cols())/2]);
 }
 

@@ -36,11 +36,20 @@ void Image::flow(int iterations = 1, double step = 0.2, bool anchors = false, bo
   // -------------------------------------
   // copy image to array
   // -------------------------------------
-
+  
   // allocate new arrays
-  double gimage[cols][rows];
-  double oimage[cols][rows];
-
+//  double gimage[cols][rows];
+//  double oimage[cols][rows];
+  double **gimage, **oimage;
+  gimage = (double **) malloc(cols * sizeof(double *));
+  for(i = 0; i < cols; i++) {
+    gimage[i] = (double *) malloc(rows * sizeof(double));
+  }
+  oimage = (double **) malloc(cols * sizeof(double *));
+  for(i = 0; i < cols; i++) {
+    oimage[i] = (double *) malloc(rows * sizeof(double));
+  }
+  
   // copy data
   for (i = 0, x = 0; x <= cols; x++, i++) {
     for (j = 0, y = 0; y <= rows; y++, j++) {
