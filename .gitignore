@@ -1,8 +1,17 @@
+*.ilk
 *.o
+*.opensdf
+*.pdb
+*.sdf
+*.suo
+*.vcxproj.filters
 .gdb_history
+Debug/
+Release/
 build/
 dist/
 doc/
 iProcessor
+iProcessor.exe
 nbproject/
 test/
