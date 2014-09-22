@@ -98,7 +98,7 @@ public:
   void CCD();
 
   // miscellaneous
-//  bool   dumpROI();
+  bool   dumpROI();
   bool   edge8(int x, int y, int color);
   bool   edge4(int x, int y, int color);
   int    range(int x, int y, int size);
@@ -115,6 +115,12 @@ public:
 
   // internal image
   PNM im;
+  struct {
+    int left;
+    int right;
+    int top;
+    int bottom;
+  } roi;
 
 };
 

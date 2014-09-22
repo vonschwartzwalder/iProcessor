@@ -17,50 +17,7 @@
 #include <list>
 using namespace std;
 
-
-// -------------------------------------
-// PNM_Point class
-// -------------------------------------
-class PNM_Point {
-public:
-
-  // constructors
-  PNM_Point();
-  PNM_Point(const PNM_Point &p);
-  PNM_Point(const int x, const int y);
-  PNM_Point(const int x, const int y, const int d);
-
-  // destructor
-  ~PNM_Point();
-
-  // I/O
-  friend ostream &operator<<(ostream &out, PNM_Point &p);
-  ostream &write(ostream &out);
-  friend istream &operator<<(istream &in, PNM_Point &p);
-  istream &read(istream &in);
-
-  // methods
-
-  // operators
-  bool operator<(PNM_Point &p);
-  bool operator==(PNM_Point &p);
-  bool operator>(PNM_Point &p);
-  PNM_Point &operator+(PNM_Point &p);
-  PNM_Point &operator-(PNM_Point &p);
-  PNM_Point &operator*(PNM_Point &p);
-  PNM_Point &operator/(PNM_Point &p);
-  PNM_Point &operator+(int v);
-  PNM_Point &operator-(int v);
-  PNM_Point &operator*(int v);
-  PNM_Point &operator/(int v);
-
-  // data
-  int x;
-  int y;
-
-};
-
-istream &operator>>(istream &in, PNM_Point &p);
+#include "point.h"
 
 
 // -------------------------------------
@@ -311,11 +268,11 @@ public:
   PNM_Color color(double col, double row, PNM_Color val);
 
   // graphic operations
-  void drawLine(PNM_Point p0, PNM_Point p1, PNM_Color color);
+  void drawLine(Point p0, Point p1, PNM_Color color);
   void drawLine(int scol, int srow, int ecol, int erow, PNM_Color color);
   void drawLine(double scol, double srow, double ecol, double erow, PNM_Color color);
-  void drawPolygon(list<PNM_Point> polygon, PNM_Color color);
-  void drawPolygon(list<PNM_Point> polygon, PNM_Color lc, PNM_Color fc);
+  void drawPolygon(list<Point> polygon, PNM_Color color);
+  void drawPolygon(list<Point> polygon, PNM_Color lc, PNM_Color fc);
   
   // operators
   PNM &operator=(PNM p);

@@ -528,7 +528,7 @@ PNM_Color PNM::color(int col, int row, PNM_Color val) {
   return old;
 }
 
-void PNM::drawLine(PNM_Point p0, PNM_Point p1, PNM_Color clr) {
+void PNM::drawLine(Point p0, Point p1, PNM_Color clr) {
   drawLine(p0.x, p0.y, p1.x, p1.y, clr);
 }
 

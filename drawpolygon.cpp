@@ -53,15 +53,15 @@ int compare_active(const void *u, const void *v);
 // -------------------------------------
 // drawPolygon
 // -------------------------------------
-void PNM::drawPolygon(list<PNM_Point> polygon, PNM_Color lc, PNM_Color fc) {
+void PNM::drawPolygon(list<Point> polygon, PNM_Color lc, PNM_Color fc) {
 
   // draw the filled polygon
   drawPolygon(polygon, fc);
 
   // draw outline
-  PNM_Point p0, p1;
+  Point p0, p1;
   bool first = true;
-  list<PNM_Point>::iterator iter;
+  list<Point>::iterator iter;
   for(iter = polygon.begin(); iter != polygon.end(); iter++) {
     if(first) {
       p0 = *iter;
@@ -75,7 +75,7 @@ void PNM::drawPolygon(list<PNM_Point> polygon, PNM_Color lc, PNM_Color fc) {
   
 }
 
-void PNM::drawPolygon(list<PNM_Point> polygon, PNM_Color c) {
+void PNM::drawPolygon(list<Point> polygon, PNM_Color c) {
 
   // anything to draw?
   if(polygon.empty()) return;
@@ -83,7 +83,7 @@ void PNM::drawPolygon(list<PNM_Point> polygon, PNM_Color c) {
   // recreate point list
   int nvert = polygon.size();
   Point2 *point = new Point2[nvert];
-  list<PNM_Point>::iterator iter;
+  list<Point>::iterator iter;
   int index = 0;
   for(iter = polygon.begin(); iter != polygon.end(); iter++) {
     point[index].x = iter->x;

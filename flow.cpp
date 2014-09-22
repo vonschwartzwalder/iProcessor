@@ -13,6 +13,7 @@
 using namespace std;
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "image.h"
 

@@ -24,7 +24,9 @@ public:
 
   // I/O
   friend ostream &operator<<(ostream &out, Point &p);
-
+  ostream &write(ostream &out);
+  friend istream &operator<<(istream &in, Point &p);
+  istream &read(istream &in);
   // methods
 
   // operators
@@ -43,8 +45,10 @@ public:
   // data
   int x;
   int y;
-  int d;
+  double d;
   
 };
+
+istream &operator>>(istream &in, Point &p);
 
 #endif

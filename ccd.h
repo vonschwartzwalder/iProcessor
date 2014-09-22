@@ -22,7 +22,7 @@ using namespace std;
 //#include "array2d.hpp"
 //#include "array3d.hpp"
 
-#include "PNM/pnm.h"
+#include "pnm.h"
 #include "point.h"
 #include "shape.h"
 #include "graph.h"

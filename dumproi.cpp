@@ -6,21 +6,21 @@
 bool Image::dumpROI() {
 
   int x,y;
-  unsigned char *pixel;
+  int pixel;
 
   cout << "dumping "
-       << roi.left() << "," << roi.top()
+       << roi.left << "," << roi.top
        << " to "
-       << roi.right() << "," << roi.bottom()
+       << roi.right << "," << roi.bottom
        << endl;
     
   // for each scanline
-  for (y = roi.top(); y < roi.bottom(); y++) {
+  for (y = roi.top; y < roi.bottom; y++) {
     // for each pixel
-    for (x = roi.left(); x < roi.right(); x++) {
+    for (x = roi.left; x < roi.right; x++) {
       if(im.valid(x, y)) {
-				pixel = (im.scanLine(y) + x);
-				cout << setw(3) << (int)*pixel << " ";
+        pixel = im.gray(x,y);
+        cout << setw(3) << pixel << " ";
       }
     }
     cout << endl;
