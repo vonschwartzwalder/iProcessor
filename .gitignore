@@ -1,6 +1,8 @@
+*.o
 .gdb_history
 build/
 dist/
 doc/
+iProcessor
 nbproject/
 test/
