@@ -1044,7 +1044,7 @@ void PNM::convert(int type) {
 void PNM::read(char *filename) {
   ifstream infile;
   if(strcmp("stdin",filename)) {
-    infile.open(filename,ios::in);
+    infile.open(filename, ios::in | ios::binary);
     if(!infile) {
       ostringstream out;
       out << "unable to open file " << filename;
@@ -1060,7 +1060,7 @@ void PNM::read(char *filename) {
 void PNM::read(string filename) {
   ifstream infile;
   if(filename != "stdin") {
-    infile.open(filename.c_str(),ios::in);
+    infile.open(filename.c_str(), ios::in | ios::binary);
     if(!infile) {
       ostringstream out;
       out << "unable to open file " << filename;
@@ -1237,8 +1237,8 @@ void PNM::read(istream &instream) {
 
 void PNM::write(char *filename) {
   ofstream outfile;
-  if(strcmp("stdout",filename)) {
-    outfile.open(filename,ios::out);
+  if (strcmp("stdout", filename)) {
+    outfile.open(filename, ios::out | ios::binary);
     if(!outfile) exit(-1);
     if(!outfile) {
       ostringstream out;
@@ -1255,7 +1255,7 @@ void PNM::write(char *filename) {
 void PNM::write(string filename) {
   ofstream outfile;
   if(filename != "stdout") {
-    outfile.open(filename.c_str(),ios::out);
+    outfile.open(filename.c_str(), ios::out | ios::binary);
     if(!outfile) {
       ostringstream out;
       out << "unable to open file " << filename;
@@ -1278,13 +1278,13 @@ void PNM::write(ostream &outstream) {
   // write magic
   switch(_type) {
   case typePBM:
-    outstream << (_raw ? "P4" : "P1") << endl;
+    outstream << (_raw ? "P4" : "P1") << "\n";
     break;
   case typePGM:
-    outstream << (_raw ? "P5" : "P2") << endl;
+    outstream << (_raw ? "P5" : "P2") << "\n";
     break;
   case typePPM:
-    outstream << (_raw ? "P6" : "P3") << endl;
+    outstream << (_raw ? "P6" : "P3") << "\n";
     break;
   default:
     ostringstream out;
@@ -1294,12 +1294,12 @@ void PNM::write(ostream &outstream) {
   }
 
   // advertise
-  outstream << "# PNM class written by Duane Schwartzwald" << endl;
+  outstream << "# PNM class written by Duane Schwartzwald" << "\n";
 
   // write size and max_value
   outstream << _cols << " " << _rows;
   if(_type != typePBM) {
-    outstream  << endl << _max_value;
+    outstream  << "\n" << _max_value;
   }
   outstream.put(0x0A);  // single whitespace character
 
@@ -1325,7 +1325,7 @@ void PNM::write(ostream &outstream) {
 					value = (bit_image[col][row]) ? 1 : 0;
 					outstream << value << " ";
 					if (!(pixels % 30)) {
-						outstream << endl;
+            outstream << "\n";
 					}
 				}
 				break;
@@ -1339,7 +1339,7 @@ void PNM::write(ostream &outstream) {
 					value = gray_image[col][row];
 					outstream << value << " ";
 					if (!(pixels % 15)) {
-						outstream << endl;
+            outstream << "\n";
 					}
 				}
 				break;
@@ -1361,7 +1361,7 @@ void PNM::write(ostream &outstream) {
 					value = color_image[col][row].blue();
 					outstream << value << " ";
 					if (!(pixels % 5)) {
-						outstream << endl;
+            outstream << "\n";
 					}
 				}
 				break;
