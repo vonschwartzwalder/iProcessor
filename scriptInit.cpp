@@ -90,6 +90,7 @@ void Script::init() {
   // morphology
   m->p = &Script::imgInvert;  m->args = "image";           f["imgInvert"] = *m;
   m->p = &Script::imgThreshold; m->args = "level, image";  f["imgThreshold"] = *m;
+  m->p = &Script::imgAutoThresholdOtsu; m->args = "image"; f["imgAutoThresholdOtsu"] = *m;
   m->p = &Script::imgIntensity; m->args = "image";         f["imgIntensity"] = *m;
   m->p = &Script::imgErode;   m->args = "image";           f["imgErode"] = *m;
   m->p = &Script::imgDilate;  m->args = "image";           f["imgDilate"] = *m;

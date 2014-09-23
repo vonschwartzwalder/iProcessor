@@ -209,6 +209,24 @@ void Script::imgThreshold() {
   s.push(item);
 }
 
+void Script::imgAutoThresholdOtsu() {
+  if(s.size() < 1) {
+    cerr << "stack underflow" << endl;
+    return;
+  }
+  if(s.top().type != IMAGE) {
+    s.pop();
+    cerr << "invalid type, expected an image" << endl;
+    return;
+  }
+  image = s.top().i; s.pop();
+  image->threshold(image->threshold_otsu());
+  Item item;
+  item.type = IMAGE;
+  item.i = image;
+  s.push(item);
+}
+
 void Script::imgErode() {
   if(s.size() < 1) {
     cerr << "stack underflow" << endl;

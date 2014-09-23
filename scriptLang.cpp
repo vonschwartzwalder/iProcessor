@@ -5,6 +5,7 @@
 
 #include "script.h"
 #include "math.h"
+#include "stdlib.h"
 
 // ---------------------------------------------------------------------
 // language functions
@@ -17,10 +18,14 @@ void Script::nop() {
 // ------------------------------------------
 
 void Script::print() {
+  
+  // if the stack is empty, print a new line
   if(s.size() < 1) {
     cout << endl;
     return;
   }
+  
+  // if the top of the stack contains a reference, put the contents on the stack
   if(s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
@@ -35,6 +40,19 @@ void Script::print() {
       s.push(item);
     }
   }
+  
+  // if the top of the stack contains an image, display the image
+  if(s.top().type == IMAGE) {
+    Item item;
+    item = s.top();
+    string name = "/tmp/iProcessor_img";
+    ti.push_back(name);
+    item.i->saveImage(name);
+    string cmd = string("/usr/bin/display ") + name + " &";
+    system(cmd.c_str());
+  }
+  
+  // print the top of the stack
   cout << s.top();
   s.pop();
 }

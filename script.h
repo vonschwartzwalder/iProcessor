@@ -16,6 +16,7 @@
 #include <stack>
 #include <list>
 #include <map>
+#include <string>
 using namespace std;
 
 #include "item.h"
@@ -111,6 +112,7 @@ public:
 
   void imgInvert();
   void imgThreshold();
+  void imgAutoThresholdOtsu();
   void imgIntensity();
   void imgErode();
   void imgDilate();
@@ -120,6 +122,8 @@ public:
   void imgSmooth();
   void imgSobel();
   void imgConvolve();
+  
+  void imgComponents();
 
   void imgAND();
   /*
@@ -179,6 +183,9 @@ private:
 
   // pointer to image 
   Image *image;
+  
+  // list of temporary images
+  std::list<string> ti;
 
   // procedure flag (delay execution)
   int inproc;

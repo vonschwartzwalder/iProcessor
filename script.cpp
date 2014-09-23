@@ -52,6 +52,8 @@
 #include <strstream>
 #include <string>
 #include <cstdlib>
+#include <cstdio>
+#include <list>
 using namespace std;
 
 #include <ctype.h>
@@ -68,6 +70,12 @@ Script::Script() {
 }
 
 Script::~Script() {
+  
+  // clean up temporary files
+  std::list<string>::iterator i;
+  for(i = ti.begin(); i != ti.end(); i++) {
+    remove((*i).c_str());
+  }
 }
 
 void Script::run() {
