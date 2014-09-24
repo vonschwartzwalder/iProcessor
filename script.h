@@ -164,6 +164,7 @@ public:
   void imgadd();
    */
 
+  void Push(Item i) { s.push(i); };
 private:
 
   // execution stack

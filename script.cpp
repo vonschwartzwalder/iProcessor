@@ -65,8 +65,6 @@ using namespace std;
 // script
 // ---------------------------------------------------------------------
 Script::Script() {
-  init();
-  run();
 }
 
 Script::~Script() {

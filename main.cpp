@@ -38,15 +38,26 @@ int main(int argc, char **argv, char **envp) {
   char **e;
   e = envp;
 
+  Script script;
+  script.init();
+
   // process arguments
   programName = argv[0];
   for (int i = 1; i < argc; i++) {
     if (string(argv[i]) == "-i" || string(argv[i]) == "-input") {
       i++;
       inName = argv[i];
-    } else if (string(argv[i]) == "-o" || string(argv[i]) == "-output") {
+    }
+    else if (string(argv[i]) == "-o" || string(argv[i]) == "-output") {
       i++;
       outName = argv[i];
+    } else if (string(argv[i]) == "-image") {
+      i++;
+      Item *item = new Item();
+      item->type = STRING;
+      item->s = argv[i];
+      script.Push(*item);
+      script.imgRead();
     } else {
       cerr << "unknown parameter: '" << argv[i] << "' ignored" << endl;
     }
@@ -77,7 +88,7 @@ int main(int argc, char **argv, char **envp) {
   }
 
   // read and execute script
-  Script script;
+  script.run();
 
   // close files and restore streams
   if (!inName.empty()) {
