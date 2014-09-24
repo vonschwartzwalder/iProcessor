@@ -5,6 +5,7 @@
 *.sdf
 *.suo
 *.vcxproj.filters
+*.vcxproj.user
 .gdb_history
 Debug/
 Release/
