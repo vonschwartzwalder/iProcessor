@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-// 
+//
 //---------------------------------------------------------------------
 
 #ifndef PNM_H
@@ -49,7 +49,7 @@ using namespace std;
 //
 //    var_Min = min( var_R, var_G, var_B )    //Min. value of RGB
 //    var_Max = max( var_R, var_G, var_B )    //Max. value of RGB
-//    del_Max = var_Max - var_Min             //Delta RGB value 
+//    del_Max = var_Max - var_Min             //Delta RGB value
 //
 //    V = var_Max
 //
@@ -273,13 +273,13 @@ public:
   void drawLine(double scol, double srow, double ecol, double erow, PNM_Color color);
   void drawPolygon(list<Point> polygon, PNM_Color color);
   void drawPolygon(list<Point> polygon, PNM_Color lc, PNM_Color fc);
-  
+
   // operators
   PNM &operator=(PNM p);
   PNM &operator=(PNM_Color c);
   PNM &operator=(int v);
   PNM &operator=(bool v);
-  
+
   // other functions
   void newImage(int t);
   void deleteImage(int t);

@@ -30,7 +30,7 @@ void Graph::remove_vertex(Shape s) {
 
 void Graph::remove_vertex(int node) {
   set<int>::iterator siter;
-  for(siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) { 
+  for (siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) {
     adjacency[(*siter)].erase(node);
   }
   adjacency.erase(node);
@@ -66,7 +66,7 @@ void Graph::add_edge(Shape s1, Shape s2) {
 }
 
 void Graph::add_edge(int node1, int node2) {
-  if(node1 != node2) {
+  if (node1 != node2) {
     adjacency[node1].insert(node2);
     adjacency[node2].insert(node1);
   }
@@ -92,13 +92,13 @@ void Graph::clear_vertex(Shape s) {
 }
 
 void Graph::clear_vertex(int node) {
-  
+
   // remove node from dictionary
   dictionary.erase(node);
 
   // remove node from adjacency
   set<int>::iterator siter;
-  for(siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) {
+  for (siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) {
     adjacency[*siter].erase(node);
   }
   adjacency.erase(node);
@@ -148,23 +148,23 @@ void Graph::dfs(int snode) {
   visited.clear();
 
   // put first node on stack
-  if(adjacency.find(node) != adjacency.end()) {
+  if (adjacency.find(node) != adjacency.end()) {
     s.push(node);
   }
 
   // visit each node in stack
-  while(! s.empty()) {
+  while (!s.empty()) {
 
     // get current node from stack
     node = s.top(); s.pop();
 
     // if we have not been here, visit
-    if(visited[node] == 0) {
+    if (visited[node] == 0) {
       visited[node]++;
 
       // push adjacent nodes we haven't seen on stack
-      for(siter = adjacency[node].rbegin(); siter != adjacency[node].rend(); siter++) {
-        if(visited[*siter] == 0) {
+      for (siter = adjacency[node].rbegin(); siter != adjacency[node].rend(); siter++) {
+        if (visited[*siter] == 0) {
           s.push(*siter);
         }
       }
@@ -174,8 +174,8 @@ void Graph::dfs(int snode) {
         cerr << "dfs visit " << node;
         bool first = true;
         set<int>::iterator siter;
-        for(siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) {
-          if(visited[*siter] == 0) {
+        for (siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) {
+          if (visited[*siter] == 0) {
             cerr << (first ? " (" : ",") << *siter;
             first = false;
           }
@@ -201,8 +201,8 @@ void Graph::rdfs(int node) {
   cerr << "dfs visit " << node;
   bool first = true;
   set<int>::iterator siter1;
-  for(siter1 = adjacency[node].begin(); siter1 != adjacency[node].end(); siter1++) {
-    if(visited[*siter1] == 0) {
+  for (siter1 = adjacency[node].begin(); siter1 != adjacency[node].end(); siter1++) {
+    if (visited[*siter1] == 0) {
       cerr << (first ? " (" : ",") << *siter1;
       first = false;
     }
@@ -211,8 +211,8 @@ void Graph::rdfs(int node) {
 
   // visit adjacent nodes we haven't seen before
   set<int>::iterator siter;
-  for(siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) {
-    if(visited[*siter] == 0) {
+  for (siter = adjacency[node].begin(); siter != adjacency[node].end(); siter++) {
+    if (visited[*siter] == 0) {
       rdfs(*siter);
     }
   }
@@ -232,8 +232,8 @@ int Graph::boundary_shapes() {
 
   // delete what?
   map<int, set<int> >::iterator miter;
-  for(miter = adjacency.begin(); miter != adjacency.end(); miter++) {
-    if(miter->second.find(0) != miter->second.end()) {
+  for (miter = adjacency.begin(); miter != adjacency.end(); miter++) {
+    if (miter->second.find(0) != miter->second.end()) {
       index = miter->first;
       to_process.push(index);
       count++;
@@ -241,11 +241,11 @@ int Graph::boundary_shapes() {
   }
 
   // make all shapes adjacent to deleted shapes adjacent to shape 0
-  while(!to_process.empty()) {
+  while (!to_process.empty()) {
     index = to_process.top(); to_process.pop();
     to_delete.push(index);
-    for(iter = adjacency[index].begin(); iter != adjacency[index].end(); iter++) {
-      if(*iter != 0) {
+    for (iter = adjacency[index].begin(); iter != adjacency[index].end(); iter++) {
+      if (*iter != 0) {
         adjacency[0].insert(*iter);
         adjacency[*iter].insert(0);
       }
@@ -253,8 +253,8 @@ int Graph::boundary_shapes() {
   }
 
   // delayed delete
-  while(!to_delete.empty()) {
-    index = to_delete.top(); 
+  while (!to_delete.empty()) {
+    index = to_delete.top();
     to_delete.pop();
 
     clear_vertex(index);
@@ -273,8 +273,8 @@ int Graph::prune_shapes(int size) {
 
   // find shapes to delete
   map<int, Shape>::iterator miter;
-  for(miter = dictionary.begin(); miter != dictionary.end(); miter++) {
-    if(miter->second.area < size) {
+  for (miter = dictionary.begin(); miter != dictionary.end(); miter++) {
+    if (miter->second.area < size) {
       index = miter->first;
       to_delete.push(index);
       count++;
@@ -282,7 +282,7 @@ int Graph::prune_shapes(int size) {
   }
 
   // do the deletions
-  while(!to_delete.empty()) {
+  while (!to_delete.empty()) {
     index = to_delete.top(); to_delete.pop();
     clear_vertex(index);
   }
@@ -303,13 +303,13 @@ int Graph::coalesce_shapes(float size) {
   // coalesce using adjacency list
   map<int, set<int> >::iterator miter;
   set<int>::iterator siter;
-  for(miter = adjacency.begin(); miter != adjacency.end(); miter++) {
+  for (miter = adjacency.begin(); miter != adjacency.end(); miter++) {
     shape1 = dictionary[miter->first];
-    for(siter = miter->second.begin(); siter != miter->second.end(); siter++) {
+    for (siter = miter->second.begin(); siter != miter->second.end(); siter++) {
       shape2 = dictionary[*siter];
-      if(contains[shape1.label].find(shape2.label) != contains[shape1.label].end()) {
+      if (contains[shape1.label].find(shape2.label) != contains[shape1.label].end()) {
         cerr << "shape " << shape1.label << " contains " << shape2.label << endl;
-        if(((float)(shape2.area) / (float)(shape1.area)) > size) {
+        if (((float)(shape2.area) / (float)(shape1.area)) > size) {
           to_delete.push(shape2.label);
           count++;
         }
@@ -318,7 +318,7 @@ int Graph::coalesce_shapes(float size) {
   }
 
   // execute deferred deletions
-  while(!to_delete.empty()) {
+  while (!to_delete.empty()) {
     index = to_delete.top(); to_delete.pop();
     clear_vertex(index);
   }
@@ -362,36 +362,36 @@ list<int> * Graph::biconnected(int k)
   int min;
   int m;
 
-  rval = new list<int>;
+  rval = new list < int > ;
   rval->push_front(k);
 
   visited[k] = ++now;
   min = now;
   area[k] = dictionary[k].pixel_count;
 
-  for(t = adjacency[k].begin(); t != adjacency[k].end(); t++) {
-    if(visited[*t] == 0) {
+  for (t = adjacency[k].begin(); t != adjacency[k].end(); t++) {
+    if (visited[*t] == 0) {
 
       b = biconnected(*t);
       m = minimum_reachable[*t];
 
       // get smallest reachable node
-      min = ( m < min ) ? m : min;
+      min = (m < min) ? m : min;
 
-      if(m >= (visited[k])) {
-        if(k != 0) {
+      if (m >= (visited[k])) {
+        if (k != 0) {
           // k is an articulation point with respect to edge (k, *t)
           aps.push_front(k);    // record that the node is an articulation
-                                // point
+          // point
 
           articulation[k] = true;
 
           b->push_front(k);
           bic.push_front(*b);
-          if(b->size()==2) bridge.push_front(*b);
+          if (b->size() == 2) bridge.push_front(*b);
 
-          for(u = b->begin(); u != b->end(); u++) {
-            if(adjacency[k].end() != adjacency[k].find(*u)) {
+          for (u = b->begin(); u != b->end(); u++) {
+            if (adjacency[k].end() != adjacency[k].find(*u)) {
               contains[k].insert(*u);
             }
           }
@@ -400,7 +400,8 @@ list<int> * Graph::biconnected(int k)
 
         dictionary[k].area += area[*t];
 
-      } else {
+      }
+      else {
 
         // k is not an articulation point with respect to the edge (k, *t)
         // add the subgraph *t to the return value
@@ -411,7 +412,8 @@ list<int> * Graph::biconnected(int k)
       area[k] += area[*t];
       delete b;
 
-    } else {  // visited
+    }
+    else {  // visited
 
       // *t has been visited
       min = (visited[*t] < min) ? visited[*t] : min;
@@ -428,7 +430,7 @@ list<int> * Graph::biconnected(int k)
 // --------------------------------------------------------
 void Graph::dump_dictionary(ostream &out) {
   map<int, Shape>::iterator iter;
-  for(iter = dictionary.begin(); iter != dictionary.end(); iter++) {
+  for (iter = dictionary.begin(); iter != dictionary.end(); iter++) {
     out << iter->first << " : " << iter->second << endl;
   }
 } // dump_dictionary
@@ -442,13 +444,13 @@ void Graph::dump_adjacency(ostream &out) {
   set<int>::iterator siter;
 
   // normal list
-  for(miter = adjacency.begin(); miter != adjacency.end(); miter++) {
+  for (miter = adjacency.begin(); miter != adjacency.end(); miter++) {
     out << (*miter).first << ":";
-    if(!(*miter).second.empty()) {
-      for(siter = (*miter).second.begin(); siter != (*miter).second.end();) {
+    if (!(*miter).second.empty()) {
+      for (siter = (*miter).second.begin(); siter != (*miter).second.end();) {
         out << " " << *siter;
         siter++;
-        if(siter != (*miter).second.end()) {
+        if (siter != (*miter).second.end()) {
           out << ",";
         }
       }
@@ -465,7 +467,7 @@ void Graph::dump_adjacency(ostream &out) {
 void Graph::dump_aps(ostream &out) {
   bool first = true;
   list<int>::iterator siter;
-  for(siter = aps.begin(); siter != aps.end(); siter++) {
+  for (siter = aps.begin(); siter != aps.end(); siter++) {
     out << (first ? "(" : ",") << *siter;
     first = false;
   }
@@ -479,9 +481,9 @@ void Graph::dump_bic(ostream &out) {
   bool first = true;
   list<list<int> >::iterator siter1;
   list<int>::iterator siter2;
-  for(siter1 = bic.begin(); siter1 != bic.end(); siter1++) {
+  for (siter1 = bic.begin(); siter1 != bic.end(); siter1++) {
     out << "(";
-    for(siter2 = siter1->begin(); siter2 != siter1->end(); siter2++) {
+    for (siter2 = siter1->begin(); siter2 != siter1->end(); siter2++) {
       out << (first ? "" : ",") << *siter2;
       first = false;
     }
@@ -498,9 +500,9 @@ void Graph::dump_bridge(ostream &out) {
   bool first = true;
   list<list<int> >::iterator siter1;
   list<int>::iterator siter2;
-  for(siter1 = bridge.begin(); siter1 != bridge.end(); siter1++) {
+  for (siter1 = bridge.begin(); siter1 != bridge.end(); siter1++) {
     out << "(";
-    for(siter2 = siter1->begin(); siter2 != siter1->end(); siter2++) {
+    for (siter2 = siter1->begin(); siter2 != siter1->end(); siter2++) {
       out << (first ? "" : ",") << *siter2;
       first = false;
     }

@@ -57,7 +57,7 @@ public:
   // constructors
   Image();
   Image(const string &filename);
-//  Image(const Image &i);
+  //  Image(const Image &i);
 
   // destructor
   ~Image();
@@ -108,7 +108,7 @@ public:
   int    calc_median_gray();
   int    count_gray(int color);
   int    rgbToGray(int r, int g, int b);
-  
+
 protected:
 
 public:

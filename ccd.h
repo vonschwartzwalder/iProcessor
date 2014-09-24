@@ -18,7 +18,7 @@
 using namespace std;
 
 
-// templates 
+// templates
 //#include "array2d.hpp"
 //#include "array3d.hpp"
 
@@ -41,7 +41,7 @@ public:
   ~CCD();
 
   // variable access
-  
+
   // shapes
   int  find_shapes();                      // find all shapes in image
   void draw_shapes();                      // draw shape polygons onto image
@@ -63,16 +63,16 @@ public:
 
   // internal conversion
   void image2gimage();    // convert image to internal gray array
-  void gimage2image();    // convert internal gray array to image 
+  void gimage2image();    // convert internal gray array to image
   void image2cimage();    // convert image to internal color array
   void cimage2image();    // convert internal color array to image
   void clear_mask();      // create a mask sized to image
-  
+
   // I/O
   void read(const string &name);   // read image from a file
   void write(const string &name);  // save image to a file
   void dump_mask(string name);     // write mask image
-  
+
   // data
   PNM image;                      // working image
   PNM original_image;             // saved image

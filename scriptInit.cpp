@@ -33,7 +33,7 @@ void Script::init() {
   m->p = &Script::makeProc; m->args = "proc end";  o["}"] = *m;
 
   // insert built in functions into the function dictionary
-  
+
   // language functions
   m->p = &Script::print; m->args = "item";                 f["print"] = *m;
   m->p = &Script::println; m->args = "item";               f["println"] = *m;
@@ -75,7 +75,7 @@ void Script::init() {
   // -------------------------------------
   // image functions
   // -------------------------------------
-  
+
   // basic I/O
   m->p = &Script::imgRead;    m->args = "filename";        f["imgRead"] = *m;
   m->p = &Script::imgWrite;   m->args = "filename, image"; f["imgWrite"] = *m;
@@ -134,5 +134,5 @@ void Script::init() {
   m->p = &Script::zoom; m->args = "width, height, image"; f["imgZoom"] = *m;
 
   m->p = &Script::imgadd; m->args = "image1, image2"; f["imgAdd"] = *m;
-   */
+  */
 }

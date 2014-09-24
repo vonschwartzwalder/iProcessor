@@ -12,7 +12,7 @@ bool Image::saveImage(string name) {
     im.write(name);
     return true;
   }
-  catch(PNM_IOException) {
+  catch (PNM_IOException) {
     return false;
   }
 }

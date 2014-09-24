@@ -22,7 +22,8 @@ Image::Image(const string &filename) {
   try {
     PNM *tmp = new PNM(filename);
     im = *tmp;
-  } catch (PNM_IOException) {
+  }
+  catch (PNM_IOException) {
     cerr << "Image::(const string &" << filename << "): open failed" << endl;
   }
 
@@ -40,20 +41,20 @@ Image::~Image() {
 //   close
 // -------------------------------------
 
-void Image::open(int depth=1) {
-  for(int i = 0; i < depth; i++) {
+void Image::open(int depth = 1) {
+  for (int i = 0; i < depth; i++) {
     erode();
   }
-  for(int i = 0; i < depth; i++) {
+  for (int i = 0; i < depth; i++) {
     dilate();
   }
 }
 
-void Image::close(int depth=1) {
-  for(int i = 0; i < depth; i++) {
+void Image::close(int depth = 1) {
+  for (int i = 0; i < depth; i++) {
     dilate();
   }
-  for(int i = 0; i < depth; i++) {
+  for (int i = 0; i < depth; i++) {
     erode();
   }
 }

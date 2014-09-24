@@ -18,21 +18,21 @@ void Script::nop() {
 // ------------------------------------------
 
 void Script::print() {
-  
+
   // if the stack is empty, print a new line
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cout << endl;
     return;
   }
-  
+
   // if the top of the stack contains a reference, put the contents on the stack
-  if(s.top().type == STRING && s.top().s[0] == '&') {
+  if (s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
     string name = item.s;
     name = name.substr(1);
     viter = v.find(name);
-    if(viter != v.end()) {
+    if (viter != v.end()) {
       item = v[viter->first];
       s.push(item);
     }
@@ -40,9 +40,9 @@ void Script::print() {
       s.push(item);
     }
   }
-  
+
   // if the top of the stack contains an image, display the image
-  if(s.top().type == IMAGE) {
+  if (s.top().type == IMAGE) {
     Item item;
     item = s.top();
     string name = "/tmp/iProcessor_img";
@@ -51,7 +51,7 @@ void Script::print() {
     string cmd = string("/usr/bin/display ") + name + " &";
     system(cmd.c_str());
   }
-  
+
   // print the top of the stack
   cout << s.top();
   s.pop();
@@ -63,118 +63,118 @@ void Script::println() {
 }
 
 void Script::dump() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "dump stack underflow" << endl;
     return;
   }
-  if(s.top().type != STRING) {
+  if (s.top().type != STRING) {
     s.pop();
     cerr << "invalid type" << endl;
     return;
   }
   string which = s.top().s; s.pop();
 
-  if(which == "stack" || which[0] == 's') {
+  if (which == "stack" || which[0] == 's') {
     Item item;
 
     // dump stack
     std::stack<Item> stk;
     cout << "stack:" << endl;
-    while(!s.empty()) {
-      item = s.top();	s.pop();
+    while (!s.empty()) {
+      item = s.top();  s.pop();
       stk.push(item);
-      switch(item.type) {
-        case BOOL:
-          cout << "  BOOL: ";
-          break;
-        case STRING:
-          cout << "  STRING: ";
-          break;
-        case NUMBER:
-          cout << "  NUMBER: ";
-          break;
-        case LIST:
-          cout << "  LIST: ";
-          break;
-        case DICT:
-          cout << "  DICT: ";
-          break;
-        case PROC:
-          cout << "  PROC: ";
-          break;
-        case IMAGE:
-          cout << "  IMAGE: ";
-          break;
+      switch (item.type) {
+      case BOOL:
+        cout << "  BOOL: ";
+        break;
+      case STRING:
+        cout << "  STRING: ";
+        break;
+      case NUMBER:
+        cout << "  NUMBER: ";
+        break;
+      case LIST:
+        cout << "  LIST: ";
+        break;
+      case DICT:
+        cout << "  DICT: ";
+        break;
+      case PROC:
+        cout << "  PROC: ";
+        break;
+      case IMAGE:
+        cout << "  IMAGE: ";
+        break;
       }
       cout << item << endl;
 
     }
-    
+
     // restore stack
-    while(!stk.empty()) {
-      item = stk.top();	stk.pop();
+    while (!stk.empty()) {
+      item = stk.top();  stk.pop();
       s.push(item);
     }
   }
 
-  else if(which == "function" || which == "func" || which[0] == 'f') {
+  else if (which == "function" || which == "func" || which[0] == 'f') {
 
     // dump function dictionary
     cout << "functions:" << endl;
-    for(fiter = f.begin(); fiter != f.end(); fiter++) {
+    for (fiter = f.begin(); fiter != f.end(); fiter++) {
       cout << "  " << fiter->first;
       cout << " ( " << f[fiter->first].args << " )" << endl;
     }
 
   }
 
-  else if(which == "variable" || which == "var" || which[0] == 'v') {
+  else if (which == "variable" || which == "var" || which[0] == 'v') {
 
     // dump variable dictionary
     cout << "variables:" << endl;
-    for(viter = v.begin(); viter != v.end(); viter++) {
+    for (viter = v.begin(); viter != v.end(); viter++) {
       cout << "  " << viter->first << " = ";
       cout << v[viter->first] << endl;
     }
 
   }
-  
-  else if(which == "operator" || which == "op" || which[0] == 'o') {
+
+  else if (which == "operator" || which == "op" || which[0] == 'o') {
 
     // dump operator dictionary
     cout << "operators:" << endl;
-    for(oiter = o.begin(); oiter != o.end(); oiter++) {
+    for (oiter = o.begin(); oiter != o.end(); oiter++) {
       cout << "  " << oiter->first;
       cout << " ( " << o[oiter->first].args << " )" << endl;
     }
-    
+
   }
 }
 
 void Script::clear() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "clear: stack underflow" << endl;
     return;
   }
-  if(s.top().type != STRING) {
+  if (s.top().type != STRING) {
     s.pop();
     cerr << "clear: invalid type, expecting STRING" << endl;
     return;
   }
   string which = s.top().s; s.pop();
 
-  if(which == "stack" || which[0] == 's') {
+  if (which == "stack" || which[0] == 's') {
     Item item;
 
     // clear stack
-    while(!s.empty()) {
-      item = s.top();	s.pop();
+    while (!s.empty()) {
+      item = s.top();  s.pop();
     }
   }
 
-  else if(which == "variable" || which == "var" || which[0] == 'v') {
+  else if (which == "variable" || which == "var" || which[0] == 'v') {
     v.clear();
-    
+
     Item *item = new Item;
     item->type = NUMBER; item->n = 2.178281828459045; v["e"] = *item;
     item->type = NUMBER; item->n = 3.141592653589793; v["pi"] = *item;
@@ -187,7 +187,7 @@ void Script::clear() {
 // ------------------------------------------
 
 void Script::at() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "at: stack underflow" << endl;
     return;
   }
@@ -195,13 +195,13 @@ void Script::at() {
   Item item;
 
   // if top of stack is a string, must be a dict lookup
-  if(s.top().type == STRING) {
+  if (s.top().type == STRING) {
 
     // get key
     string key = s.top().s; s.pop();
 
     // make sure item on stack is a dict
-    if(s.top().type != DICT) {
+    if (s.top().type != DICT) {
       s.pop();
       cerr << "no dict on stack" << endl;
       return;
@@ -215,13 +215,13 @@ void Script::at() {
 
   }
 
-  else if(s.top().type == NUMBER) {
+  else if (s.top().type == NUMBER) {
 
     // get index
     double index = s.top().n; s.pop();
 
     // make sure item on stack is a list
-    if(s.top().type != LIST) {
+    if (s.top().type != LIST) {
       s.pop();
       cerr << "no list on stack" << endl;
       return;
@@ -230,9 +230,9 @@ void Script::at() {
     // find item
     std::list<Item>::iterator iter;
     unsigned int cnt = 0;
-    for(iter = s.top().l.begin(), cnt = 0;
-        iter != s.top().l.end(), cnt != index;
-        iter++, cnt++) {
+    for (iter = s.top().l.begin(), cnt = 0;
+      iter != s.top().l.end(), cnt != index;
+      iter++, cnt++) {
     }
 
     // create a new item
@@ -255,7 +255,7 @@ void Script::at() {
 // ------------------------------------------
 
 void Script::pop() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "pop: stack underflow" << endl;
     return;
   }
@@ -263,7 +263,7 @@ void Script::pop() {
 }
 
 void Script::dup() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "dup: stack underflow" << endl;
     return;
   }
@@ -278,7 +278,7 @@ void Script::dup() {
 
 // swap top two items on the stack
 void Script::swap() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "swap: stack underflow" << endl;
     return;
   }
@@ -290,7 +290,7 @@ void Script::swap() {
 
 // roll the contents of the stack by one position
 void Script::roll() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     return;
   }
 
@@ -299,9 +299,9 @@ void Script::roll() {
 
   // get top of stack
   Item item = s.top(); s.pop();
-  
+
   // transfer rest of current stack to temporary
-  while(!s.empty()) {
+  while (!s.empty()) {
     ts.push(s.top()); s.pop();
   }
 
@@ -309,7 +309,7 @@ void Script::roll() {
   s.push(item);
 
   // put rest of stack back
-  while(!ts.empty()) {
+  while (!ts.empty()) {
     s.push(ts.top()); ts.pop();
   }
 }
@@ -335,13 +335,13 @@ void Script::empty() {
 // ------------------------------------------
 
 void Script::def() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "def: stack underflow" << endl;
     return;
   }
 
   // get variable name
-  if(s.top().type != STRING) {
+  if (s.top().type != STRING) {
     cerr << "def: invalid type, expecting STRING" << endl;
     s.pop();
     return;
@@ -349,7 +349,7 @@ void Script::def() {
   string name = s.top().s; s.pop();
 
   // remove reference mark
-  if(name[0] == '&') {
+  if (name[0] == '&') {
     name = name.substr(1);
   }
 
@@ -362,17 +362,17 @@ void Script::def() {
 
 // undefine a variable
 void Script::undef() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "undef: stack underflow" << endl;
     return;
   }
-  if(s.top().type != STRING) {
+  if (s.top().type != STRING) {
     s.pop();
     cerr << "undef: invalid type, expecting STRING" << endl;
     return;
   }
   string name = s.top().s; s.pop();
-  if(name[0] == '&') {
+  if (name[0] == '&') {
     name = name.substr(1);
   }
   v.erase(name);
@@ -383,7 +383,7 @@ void Script::undef() {
 // ------------------------------------------
 
 void Script::add() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "add: stack underflow" << endl;
     return;
   }
@@ -392,19 +392,19 @@ void Script::add() {
 
   a = s.top(); s.pop();
   b = s.top(); s.pop();
-  
-  if(a.type == IMAGE && b.type == IMAGE) {
+
+  if (a.type == IMAGE && b.type == IMAGE) {
     b.i->math(a.i->im, MATH_ADD);
     s.push(b);
     return;
   }
 
-  if(!(a.type == STRING || a.type == NUMBER || a.type == LIST)) {
+  if (!(a.type == STRING || a.type == NUMBER || a.type == LIST)) {
     cerr << "add: invalid type" << endl;
     return;
   }
 
-  if(!(b.type == STRING || b.type == NUMBER || b.type == LIST)) {
+  if (!(b.type == STRING || b.type == NUMBER || b.type == LIST)) {
     cerr << "add: invalid type" << endl;
     return;
   }
@@ -413,28 +413,28 @@ void Script::add() {
 }
 
 void Script::sub() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "sub: stack underflow" << endl;
     return;
   }
 
-  Item a,b;
+  Item a, b;
 
   a = s.top(); s.pop();
   b = s.top(); s.pop();
-  
-  if(a.type == IMAGE && b.type == IMAGE) {
+
+  if (a.type == IMAGE && b.type == IMAGE) {
     b.i->math(a.i->im, MATH_SUB);
     s.push(b);
     return;
   }
 
-  if(!(a.type == NUMBER)) {
+  if (!(a.type == NUMBER)) {
     cerr << "sub: invalid type" << endl;
     return;
   }
 
-  if(!(b.type == NUMBER)) {
+  if (!(b.type == NUMBER)) {
     cerr << "sub: invalid type" << endl;
     return;
   }
@@ -443,28 +443,28 @@ void Script::sub() {
 }
 
 void Script::mul() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "mul: stack underflow" << endl;
     return;
   }
 
-  Item a,b;
+  Item a, b;
 
   a = s.top(); s.pop();
   b = s.top(); s.pop();
-  
-  if(a.type == IMAGE && b.type == IMAGE) {
+
+  if (a.type == IMAGE && b.type == IMAGE) {
     b.i->math(a.i->im, MATH_MUL);
     s.push(b);
     return;
   }
 
-  if(!(a.type == NUMBER)) {
+  if (!(a.type == NUMBER)) {
     cerr << "mul: invalid type" << endl;
     return;
   }
 
-  if(!(b.type == NUMBER)) {
+  if (!(b.type == NUMBER)) {
     cerr << "mul: invalid type" << endl;
     return;
   }
@@ -473,28 +473,28 @@ void Script::mul() {
 }
 
 void Script::div() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "div: stack underflow" << endl;
     return;
   }
 
-  Item a,b;
+  Item a, b;
 
   a = s.top(); s.pop();
   b = s.top(); s.pop();
-  
-  if(a.type == IMAGE && b.type == IMAGE) {
+
+  if (a.type == IMAGE && b.type == IMAGE) {
     b.i->math(a.i->im, MATH_DIV);
     s.push(b);
     return;
   }
 
-  if(!(a.type == NUMBER)) {
+  if (!(a.type == NUMBER)) {
     cerr << "div: invalid type" << endl;
     return;
   }
 
-  if(!(b.type == NUMBER)) {
+  if (!(b.type == NUMBER)) {
     cerr << "div: invalid type" << endl;
     return;
   }
@@ -503,29 +503,29 @@ void Script::div() {
 }
 
 void Script::mod() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "mod: stack underflow" << endl;
     return;
   }
 
-  Item a,b;
+  Item a, b;
 
   a = s.top(); s.pop();
   b = s.top(); s.pop();
-  
-  if(a.type == IMAGE && b.type == IMAGE) {
+
+  if (a.type == IMAGE && b.type == IMAGE) {
     b.i->math(a.i->im, MATH_MOD);
     s.push(b);
     return;
   }
 
-  if(!(a.type == NUMBER)) {
+  if (!(a.type == NUMBER)) {
     cerr << "mod: invalid type" << endl;
     return;
   }
 
   b = s.top();
-  if(!(b.type == NUMBER)) {
+  if (!(b.type == NUMBER)) {
     cerr << "mod: invalid type" << endl;
     return;
   }
@@ -534,23 +534,23 @@ void Script::mod() {
 }
 
 void Script::pwr() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "pwr: stack underflow" << endl;
     return;
   }
-  if(s.top().type != NUMBER) {
+  if (s.top().type != NUMBER) {
     s.pop();
     cerr << "pwr: invalid type" << endl;
     return;
   }
   double y = s.top().n; s.pop();
-  if(s.top().type != NUMBER) {
+  if (s.top().type != NUMBER) {
     s.pop();
     cerr << "pwr: invalid type" << endl;
     return;
   }
   double x = s.top().n; s.pop();
-  double z = pow(x,y);
+  double z = pow(x, y);
   Item item;
   item.type = NUMBER;
   item.n = z;
@@ -558,11 +558,11 @@ void Script::pwr() {
 }
 
 void Script::ln() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "ln: stack underflow" << endl;
     return;
   }
-  if(s.top().type != NUMBER) {
+  if (s.top().type != NUMBER) {
     s.pop();
     cerr << "ln: invalid type" << endl;
     return;
@@ -576,11 +576,11 @@ void Script::ln() {
 }
 
 void Script::neg() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "neg: stack underflow" << endl;
     return;
   }
-  if(s.top().type != NUMBER) {
+  if (s.top().type != NUMBER) {
     s.pop();
     cerr << "neg: invalid type" << endl;
     return;
@@ -597,7 +597,7 @@ void Script::neg() {
 // ------------------------------------------
 
 void Script::lt() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "lt: stack underflow" << endl;
     return;
   }
@@ -606,25 +606,25 @@ void Script::lt() {
   item.type = BOOL;
   item.b = false;
 
-  if(s.top().type == NUMBER) {
+  if (s.top().type == NUMBER) {
     double n1 = s.top().n; s.pop();
-    if(s.top().type != NUMBER) {
+    if (s.top().type != NUMBER) {
       s.pop();
       cerr << "lt: invalid type" << endl;
     }
     double n2 = s.top().n; s.pop();
-    if(n2 < n1) {
+    if (n2 < n1) {
       item.b = true;
     }
   }
-  else if(s.top().type == STRING) {
+  else if (s.top().type == STRING) {
     string n1 = s.top().s; s.pop();
-    if(s.top().type != STRING) {
+    if (s.top().type != STRING) {
       s.pop();
       cerr << "lt: invalid type" << endl;
     }
     string n2 = s.top().s; s.pop();
-    if(n2 < n1) {
+    if (n2 < n1) {
       item.b = true;
     }
   }
@@ -637,7 +637,7 @@ void Script::lt() {
 }
 
 void Script::eq() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "eq: stack underflow" << endl;
     return;
   }
@@ -646,25 +646,25 @@ void Script::eq() {
   item.type = BOOL;
   item.b = false;
 
-  if(s.top().type == NUMBER) {
+  if (s.top().type == NUMBER) {
     double n1 = s.top().n; s.pop();
-    if(s.top().type != NUMBER) {
+    if (s.top().type != NUMBER) {
       s.pop();
       cerr << "eq: invalid type" << endl;
     }
     double n2 = s.top().n; s.pop();
-    if(n2 == n1) {
+    if (n2 == n1) {
       item.b = true;
     }
   }
-  else if(s.top().type == STRING) {
+  else if (s.top().type == STRING) {
     string n1 = s.top().s; s.pop();
-    if(s.top().type != STRING) {
+    if (s.top().type != STRING) {
       s.pop();
       cerr << "eq: invalid type" << endl;
     }
     string n2 = s.top().s; s.pop();
-    if(n2 == n1) {
+    if (n2 == n1) {
       item.b = true;
     }
   }
@@ -678,7 +678,7 @@ void Script::eq() {
 }
 
 void Script::ne() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "ne: stack underflow" << endl;
     return;
   }
@@ -687,25 +687,25 @@ void Script::ne() {
   item.type = BOOL;
   item.b = false;
 
-  if(s.top().type == NUMBER) {
+  if (s.top().type == NUMBER) {
     double n1 = s.top().n; s.pop();
-    if(s.top().type != NUMBER) {
+    if (s.top().type != NUMBER) {
       s.pop();
       cerr << "ne: invalid type" << endl;
     }
     double n2 = s.top().n; s.pop();
-    if(n2 != n1) {
+    if (n2 != n1) {
       item.b = true;
     }
   }
-  else if(s.top().type == STRING) {
+  else if (s.top().type == STRING) {
     string n1 = s.top().s; s.pop();
-    if(s.top().type != STRING) {
+    if (s.top().type != STRING) {
       s.pop();
       cerr << "ne: invalid type" << endl;
     }
     string n2 = s.top().s; s.pop();
-    if(n2 != n1) {
+    if (n2 != n1) {
       item.b = true;
     }
   }
@@ -718,7 +718,7 @@ void Script::ne() {
 }
 
 void Script::gt() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "gt: stack underflow" << endl;
     return;
   }
@@ -727,25 +727,25 @@ void Script::gt() {
   item.type = BOOL;
   item.b = false;
 
-  if(s.top().type == NUMBER) {
+  if (s.top().type == NUMBER) {
     double n1 = s.top().n; s.pop();
-    if(s.top().type != NUMBER) {
+    if (s.top().type != NUMBER) {
       s.pop();
       cerr << "gt: invalid type" << endl;
     }
     double n2 = s.top().n; s.pop();
-    if(n2 > n1) {
+    if (n2 > n1) {
       item.b = true;
     }
   }
-  else if(s.top().type == STRING) {
+  else if (s.top().type == STRING) {
     string n1 = s.top().s; s.pop();
-    if(s.top().type != STRING) {
+    if (s.top().type != STRING) {
       s.pop();
       cerr << "gt: invalid type" << endl;
     }
     string n2 = s.top().s; s.pop();
-    if(n2 > n1) {
+    if (n2 > n1) {
       item.b = true;
     }
   }
@@ -758,19 +758,19 @@ void Script::gt() {
 }
 
 void Script::doif() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "doif: stack underflow" << endl;
     return;
   }
 
   // if a reference, replace the reference with the real thing
-  if(s.top().type == STRING && s.top().s[0] == '&') {
+  if (s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
     string name = item.s;
     name = name.substr(1);
     viter = v.find(name);
-    if(viter != v.end()) {
+    if (viter != v.end()) {
       item = v[viter->first];
       s.push(item);
     }
@@ -780,7 +780,7 @@ void Script::doif() {
   }
 
   // get proc
-  if(s.top().type != PROC) {
+  if (s.top().type != PROC) {
     cerr << "doif: invalid type, expecting PROC" << endl;
     s.pop();
     return;
@@ -788,7 +788,7 @@ void Script::doif() {
   Item proc = s.top(); s.pop();
 
   // get condition
-  if(s.top().type != BOOL) {
+  if (s.top().type != BOOL) {
     s.pop();
     cerr << "doif: invalid type, expecting BOOL" << endl;
     return;
@@ -796,27 +796,27 @@ void Script::doif() {
   bool condition = s.top().b; s.pop();
 
   // exec proc?
-  if(condition) {
+  if (condition) {
     s.push(proc);
     exec();
   }
-  
+
 }
 
 void Script::foreach() {
-  if(s.size() < 2) {
+  if (s.size() < 2) {
     cerr << "foreach: stack underflow" << endl;
     return;
   }
 
   // if a reference, replace the reference with the real thing
-  if(s.top().type == STRING && s.top().s[0] == '&') {
+  if (s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
     string name = item.s;
     name = name.substr(1);
     viter = v.find(name);
-    if(viter != v.end()) {
+    if (viter != v.end()) {
       item = v[viter->first];
       s.push(item);
     }
@@ -826,7 +826,7 @@ void Script::foreach() {
   }
 
   // get proc
-  if(s.top().type != PROC) {
+  if (s.top().type != PROC) {
     cerr << "foreach: invalid type" << endl;
     s.pop();
     return;
@@ -834,13 +834,13 @@ void Script::foreach() {
   Item proc = s.top(); s.pop();
 
   // if a reference, replace the reference with the real thing
-  if(s.top().type == STRING && s.top().s[0] == '&') {
+  if (s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
     string name = item.s;
     name = name.substr(1);
     viter = v.find(name);
-    if(viter != v.end()) {
+    if (viter != v.end()) {
       item = v[viter->first];
       s.push(item);
     }
@@ -850,7 +850,7 @@ void Script::foreach() {
   }
 
   // get list or dict
-  if(!(s.top().type == LIST || s.top().type == DICT)) {
+  if (!(s.top().type == LIST || s.top().type == DICT)) {
     s.pop();
     cerr << "foreach: invalid type, expecting LIST or DICT" << endl;
     return;
@@ -858,9 +858,9 @@ void Script::foreach() {
   Item container = s.top(); s.pop();
 
   // exec proc for each member of a list
-  if(container.type == LIST) {
+  if (container.type == LIST) {
     std::list<Item>::iterator iter;
-    for(iter = container.l.begin(); iter != container.l.end(); iter++) {
+    for (iter = container.l.begin(); iter != container.l.end(); iter++) {
       s.push(*iter);
       s.push(proc);
       exec();
@@ -868,10 +868,10 @@ void Script::foreach() {
   }
 
   // exec proc for each member of a dict
-  if(container.type == DICT) {
+  if (container.type == DICT) {
     Item item;
     std::map<string, Item>::iterator iter;
-    for(iter = container.d.begin(); iter != container.d.end(); iter++) {
+    for (iter = container.d.begin(); iter != container.d.end(); iter++) {
       item.type = STRING;
       item.s = iter->first;
       s.push(item);
@@ -884,19 +884,19 @@ void Script::foreach() {
 }
 
 void Script::dofor() {
-  if(s.size() < 4) {
+  if (s.size() < 4) {
     cerr << "dofor: stack underflow" << endl;
     return;
   }
 
   // if a reference, replace the reference with the real thing
-  if(s.top().type == STRING && s.top().s[0] == '&') {
+  if (s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
     string name = item.s;
     name = name.substr(1);
     viter = v.find(name);
-    if(viter != v.end()) {
+    if (viter != v.end()) {
       item = v[viter->first];
       s.push(item);
     }
@@ -906,7 +906,7 @@ void Script::dofor() {
   }
 
   // get proc
-  if(s.top().type != PROC) {
+  if (s.top().type != PROC) {
     cerr << "dofor: invalid type" << endl;
     s.pop();
     return;
@@ -914,7 +914,7 @@ void Script::dofor() {
   Item proc = s.top(); s.pop();
 
   // get end
-  if(s.top().type != NUMBER) {
+  if (s.top().type != NUMBER) {
     s.pop();
     cerr << "dofor: invalid type, expecting NUMBER" << endl;
     return;
@@ -922,7 +922,7 @@ void Script::dofor() {
   double end = s.top().n; s.pop();
 
   // get step
-  if(s.top().type != NUMBER) {
+  if (s.top().type != NUMBER) {
     s.pop();
     cerr << "dofor: invalid type, expecting NUMBER" << endl;
     return;
@@ -930,7 +930,7 @@ void Script::dofor() {
   double step = s.top().n; s.pop();
 
   // get start
-  if(s.top().type != NUMBER) {
+  if (s.top().type != NUMBER) {
     s.pop();
     cerr << "dofor: invalid type, expecting NUMBER" << endl;
     return;
@@ -939,7 +939,7 @@ void Script::dofor() {
 
   // do for loop
   Item item;
-  for(double i = start; i < end; i += step) {
+  for (double i = start; i < end; i += step) {
 
     // push current iteration number
     item.type = NUMBER;
@@ -949,7 +949,7 @@ void Script::dofor() {
     // execute proc
     s.push(proc);
     exec();
-    
+
   }
 
 }
@@ -960,19 +960,19 @@ void Script::dofor() {
 
 // put all elements from LIST or DICT onto stack
 void Script::load() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "load: stack underflow" << endl;
     return;
   }
 
   // if a reference, replace the reference with the real thing
-  if(s.top().type == STRING && s.top().s[0] == '&') {
+  if (s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
     string name = item.s;
     name = name.substr(1);
     viter = v.find(name);
-    if(viter != v.end()) {
+    if (viter != v.end()) {
       item = v[viter->first];
       s.push(item);
     }
@@ -982,36 +982,36 @@ void Script::load() {
   }
 
   // make sure we have the right thing on the stack
-  if(!(s.top().type == LIST || s.top().type == DICT)) {
+  if (!(s.top().type == LIST || s.top().type == DICT)) {
     cerr << "load: invalid type, expecting LIST or DICT" << endl;
     return;
   }
   Item container = s.top(); s.pop();
 
   // dump a list onto the stack
-  if(container.type == LIST) {
+  if (container.type == LIST) {
     std::list<Item>::iterator iter;
-    for(iter = container.l.begin(); iter != container.l.end(); iter++) {
+    for (iter = container.l.begin(); iter != container.l.end(); iter++) {
       s.push(*iter);
     }
   }
-  
+
   // dump a dict onto the stack
   else {
     Item item;
     std::map<string, Item>::iterator iter;
-    for(iter = container.d.begin(); iter != container.d.end(); iter++) {
+    for (iter = container.d.begin(); iter != container.d.end(); iter++) {
       item.type = STRING;
       item.s = iter->first;
       s.push(item);
       s.push(container.d[iter->first]);
     }
   }
-  
+
 }
 
 void Script::makeList() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "makeList: stack underflow" << endl;
     return;
   }
@@ -1022,7 +1022,7 @@ void Script::makeList() {
 
   // read stack until starting '('
   Item o = s.top(); s.pop();
-  while(o.s != "(") {
+  while (o.s != "(") {
     item.l.push_front(o);
     o = s.top(); s.pop();
   }
@@ -1032,7 +1032,7 @@ void Script::makeList() {
 }
 
 void Script::makeDict() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "makeDict: stack underflow" << endl;
     return;
   }
@@ -1041,21 +1041,21 @@ void Script::makeDict() {
   Item value = s.top(); s.pop();
 
   // is this an empty dict?
-  if(value.type == STRING && value.s == "[") {
+  if (value.type == STRING && value.s == "[") {
     Item item;
     item.type = DICT;
     s.push(item);
     return;
   }
 
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "makeDict: stack underflow" << endl;
     return;
   }
 
   // get key from stack
   Item key = s.top(); s.pop();
-  if(key.type != STRING) {
+  if (key.type != STRING) {
     cerr << "makeDict: invalid key '" << key << "' in dict" << endl;
     cerr << "  value = " << value << endl;
     return;
@@ -1066,22 +1066,22 @@ void Script::makeDict() {
   item.type = DICT;
 
   // build new dictionary
-  while(value.s != "[") {
+  while (value.s != "[") {
 
     // add item to dictionary
     item.d[key.s] = value;
 
     // get value from stack
     value = s.top(); s.pop();
-    if(value.type == STRING && value.s == "[") break;
-    if(s.size() < 1) {
+    if (value.type == STRING && value.s == "[") break;
+    if (s.size() < 1) {
       cerr << "makeDict: stack underflow" << endl;
       return;
     }
 
     // get key from stack
     key = s.top(); s.pop();
-    if(key.type != STRING) {
+    if (key.type != STRING) {
       cerr << "makeDict: invalid key '" << key << "' in dict" << endl;
       cerr << "  value = " << value << endl;
       return;
@@ -1093,7 +1093,7 @@ void Script::makeDict() {
 }
 
 void Script::makeProc() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "makeProc: stack underflow" << endl;
     return;
   }
@@ -1104,7 +1104,7 @@ void Script::makeProc() {
 
   // read stack until starting '{'
   Item o = s.top(); s.pop();
-  while(o.s != "{") {
+  while (o.s != "{") {
     item.p.push_front(o);
     o = s.top(); s.pop();
   }
@@ -1137,19 +1137,19 @@ void Script::proc() {
 
 // execute a procedure
 void Script::exec() {
-  if(s.size() < 1) {
+  if (s.size() < 1) {
     cerr << "exec: stack underflow" << endl;
     return;
   }
 
   // if a reference, replace the reference with the real thing
-  if(s.top().type == STRING && s.top().s[0] == '&') {
+  if (s.top().type == STRING && s.top().s[0] == '&') {
     Item item;
     item = s.top(); s.pop();
     string name = item.s;
     name = name.substr(1);
     viter = v.find(name);
-    if(viter != v.end()) {
+    if (viter != v.end()) {
       item = v[viter->first];
       s.push(item);
     }
@@ -1159,7 +1159,7 @@ void Script::exec() {
   }
 
   // check for proc
-  if(s.top().type != PROC) {
+  if (s.top().type != PROC) {
     cerr << "exec: invalid type" << endl;
     cout << "  type = " << s.top().type << endl;
     cout << "  " << s.top() << endl;
@@ -1171,60 +1171,60 @@ void Script::exec() {
 
   std::list<Item> plist = s.top().p; s.pop();
   std::list<Item>::iterator iter;
-  for(iter = plist.begin(); iter != plist.end(); iter++) {
+  for (iter = plist.begin(); iter != plist.end(); iter++) {
 
-    switch(iter->type) {
-      case BOOL:
-      case NUMBER:
-      case IMAGE:
-      case LIST:
-      case DICT:
+    switch (iter->type) {
+    case BOOL:
+    case NUMBER:
+    case IMAGE:
+    case LIST:
+    case DICT:
+      s.push(*iter);
+      break;
+    case STRING:
+
+      // see if this is an operator, function or a variable
+      fiter = f.find(iter->s);
+      viter = v.find(iter->s);
+      oiter = o.find(iter->s);
+
+      // if a function, execute
+      if (fiter != f.end()) {
+        // here be magic!
+        // p is a pointer to a member function
+        // f[str] is a Function structure that has p as a member
+        // it works because we are executing a member of this
+        (this->*(f[iter->s].p))();
+        //(*this.*(f[str].p))();
+      }
+
+      // if a variable, push value
+      else if (viter != v.end()) {
+        item = v[viter->first];
+        s.push(item);
+
+        // if this is a procedure, execute it
+        if (item.type == PROC) {
+          exec();
+        }
+      }
+
+      // if an operator, execute it
+      else if (oiter != o.end()) {
+        (this->*(o[iter->s].p))();
+      }
+
+      // something else, push it
+      else {
         s.push(*iter);
-        break;
-      case STRING:
-
-        // see if this is an operator, function or a variable
-        fiter = f.find(iter->s);
-        viter = v.find(iter->s);
-        oiter = o.find(iter->s);
-
-        // if a function, execute
-        if(fiter != f.end()) {
-          // here be magic!
-          // p is a pointer to a member function
-          // f[str] is a Function structure that has p as a member
-          // it works because we are executing a member of this
-          (this->*(f[iter->s].p))();
-          //(*this.*(f[str].p))();
-        }
-
-        // if a variable, push value
-        else if(viter != v.end()) {
-          item = v[viter->first];
-          s.push(item);
-          
-          // if this is a procedure, execute it
-          if(item.type == PROC) {
-            exec();
-          }
-        }
-
-        // if an operator, execute it
-        else if(oiter != o.end()) {
-          (this->*(o[iter->s].p))();
-        }
-
-          // something else, push it
-        else {
-          s.push(*iter);
-        }
-        break;
-      case PROC:
-        s.push(*iter);
-        break;
+      }
+      break;
+    case PROC:
+      s.push(*iter);
+      break;
     }
-    
+
   }
-  
+
 }
 

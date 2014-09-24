@@ -38,7 +38,7 @@ typedef struct TOKEN {
 class Script {
 
 public:
-  
+
   // constructors
   Script();
 
@@ -55,7 +55,7 @@ public:
 
   // initialization
   void init();
-  
+
   // interpretor
   Token getToken();
   void run();
@@ -122,7 +122,7 @@ public:
   void imgSmooth();
   void imgSobel();
   void imgConvolve();
-  
+
   void imgComponents();
 
   void imgAND();
@@ -137,7 +137,7 @@ public:
   void imgDIF();
   void imgMAX();
   void imgMIN();
-*/
+  */
   // ImageMagick functions
   /*
   void blur();
@@ -162,7 +162,7 @@ public:
   void ROI();
 
   void imgadd();
-   */
+  */
 
   void Push(Item i) { s.push(i); };
 private:
@@ -182,9 +182,9 @@ private:
   map<string, Function> o;
   map<string, Function>::iterator oiter;
 
-  // pointer to image 
+  // pointer to image
   Image *image;
-  
+
   // list of temporary images
   std::list<string> ti;
 

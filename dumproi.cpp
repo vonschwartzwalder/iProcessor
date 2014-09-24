@@ -13,7 +13,7 @@ bool Image::dumpROI() {
        << " to "
        << roi.right << "," << roi.bottom
        << endl;
-    
+
   // for each scanline
   for (y = roi.top; y < roi.bottom; y++) {
     // for each pixel
@@ -27,4 +27,4 @@ bool Image::dumpROI() {
   }
   return true;
 }
-  
+

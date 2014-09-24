@@ -46,7 +46,7 @@ public:
   int x;
   int y;
   double d;
-  
+
 };
 
 istream &operator>>(istream &in, Point &p);

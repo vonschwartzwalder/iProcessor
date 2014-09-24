@@ -60,21 +60,21 @@ istream &operator>>(istream &in, Point &p) {
 
   // skip white space
   cp = in.peek();
-  while(cp == ' ' || cp == '\t' || cp == '\n' || cp == '\r') {
+  while (cp == ' ' || cp == '\t' || cp == '\n' || cp == '\r') {
     in.get();
     cp = in.peek();
   }
 
   // skip comma
   cp = in.get();
-  if(cp != ',') {
+  if (cp != ',') {
     cerr << "no comma found, found " << cp << " instead" << endl;
     cerr << "pretending " << cp << " is a comma and continuing" << endl;
   }
 
   // skip white space
   cp = in.peek();
-  while(cp == ' ' || cp == '\t' || cp == '\n' || cp == '\r') {
+  while (cp == ' ' || cp == '\t' || cp == '\n' || cp == '\r') {
     in.get();
     cp = in.peek();
   }
@@ -82,7 +82,7 @@ istream &operator>>(istream &in, Point &p) {
   // get y
   in >> value;
   p.y = value;
-  
+
   return in;
 }
 

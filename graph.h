@@ -17,7 +17,7 @@
 
 class Graph {
 
-  public:
+public:
   // -------------------------------------
   // constructors, destructor
   // -------------------------------------
@@ -29,7 +29,7 @@ class Graph {
   // data access
   // -------------------------------------
   void add_vertex(Shape s);               // add a shape to the shape dictionary
-  void add_vertex(int s);       
+  void add_vertex(int s);
   void remove_vertex(Shape s);            // remove a shape from the adjacency list
   void remove_vertex(int s);
   void clear_vertex(Shape s);             // remove all edges touching this vertex
@@ -52,7 +52,7 @@ class Graph {
   int aps_size();
   int bic_size();
   int bridge_size();
-  
+
   // -------------------------------------
   // algorithms
   // -------------------------------------
@@ -63,7 +63,7 @@ class Graph {
   int  coalesce_shapes(float size);       // coalesce shapes
 
   void biconnected_components(); // find both biconnected components
-                                          // and articulation points
+                                 // and articulation points
   list<int> * biconnected(int k);
 
   // -------------------------------------
@@ -71,7 +71,7 @@ class Graph {
   // -------------------------------------
   friend ostream &operator<<(ostream &out, Graph &g);
   //friend ostream &operator>>(istream &in, Graph &g);
-  
+
   // -------------------------------------
   // I/O
   // -------------------------------------
@@ -80,11 +80,11 @@ class Graph {
   void dump_aps(ostream &out);         // write articulation points
   void dump_bic(ostream &out);         // write biconnected components
   void dump_bridge(ostream &out);      // write bridges
-  
+
   // -------------------------------------
   // data
   // -------------------------------------
-  public:
+public:
   typedef map<int, Shape>::iterator d_iterator;
   typedef map<int, set<int> >::iterator a_iterator;
 
@@ -97,16 +97,16 @@ class Graph {
   map<int, Shape> dictionary;       // dictionary of vertices
 
   list<int> aps;                    // articulation points
-  list<list <int> > bic;	          // biconnected components
-  list<list <int> > bridge;	        // bridges
+  list<list <int> > bic;            // biconnected components
+  list<list <int> > bridge;         // bridges
 
   map<int, int> visited;            // visited nodes
-  map<int, int> visited0;            // visited nodes
-  map<int, int> minimum_reachable;  
+  map<int, int> visited0;           // visited nodes
+  map<int, int> minimum_reachable;
 
   map<int, bool> articulation;
-  map<int, bool> not_dfs_leaf;             // dfs leaf 
- 
+  map<int, bool> not_dfs_leaf;             // dfs leaf
+
   int now;
 };
 

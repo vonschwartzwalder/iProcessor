@@ -24,33 +24,33 @@ using namespace std;
 class Item {
 public:
 
-    // constructors
-    Item();
+  // constructors
+  Item();
 
-    // destructor
-    ~Item();
+  // destructor
+  ~Item();
 
-    // I/O
-    friend ostream &operator<<(ostream &out, Item &i);
+  // I/O
+  friend ostream &operator<<(ostream &out, Item &i);
 
-    // methods
+  // methods
 
-    // operators
-    Item &operator+(Item &a);
-    Item &operator-(Item &a);
-    Item &operator*(Item &a);
-    Item &operator/(Item &a);
-    Item &operator%(Item &a);
+  // operators
+  Item &operator+(Item &a);
+  Item &operator-(Item &a);
+  Item &operator*(Item &a);
+  Item &operator/(Item &a);
+  Item &operator%(Item &a);
 
-    // data members
-    int type;
-    bool b;
-    string s;
-    double n;
-    list<Item> l;
-    map<string, Item> d;
-    list<Item> p;
-    Image *i;
+  // data members
+  int type;
+  bool b;
+  string s;
+  double n;
+  list<Item> l;
+  map<string, Item> d;
+  list<Item> p;
+  Image *i;
 
 };
 

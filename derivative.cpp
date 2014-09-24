@@ -43,66 +43,66 @@ void Image::derivative(const int op) {
         }
       }
 
-      c = (float) grays[4];
-      n = (float) grays[1];
-      e = (float) grays[5];
-      s = (float) grays[7];
-      w = (float) grays[3];
-      nw = (float) grays[0];
-      ne = (float) grays[2];
-      sw = (float) grays[6];
-      se = (float) grays[8];
+      c = (float)grays[4];
+      n = (float)grays[1];
+      e = (float)grays[5];
+      s = (float)grays[7];
+      w = (float)grays[3];
+      nw = (float)grays[0];
+      ne = (float)grays[2];
+      sw = (float)grays[6];
+      se = (float)grays[8];
 
       switch (op) {
-        case DERIVATIVE_IX:
-          Ix = (-w + e) / 2;
-          value = (int) Ix;
-          break;
+      case DERIVATIVE_IX:
+        Ix = (-w + e) / 2;
+        value = (int)Ix;
+        break;
 
-        case DERIVATIVE_IY:
-          Iy = (-n + s) / 2;
-          value = (int) Iy;
-          break;
+      case DERIVATIVE_IY:
+        Iy = (-n + s) / 2;
+        value = (int)Iy;
+        break;
 
-        case DERIVATIVE_IXY:
-          Ixy = (nw + -ne + -sw + se) / 4;
-          value = (int) Ixy;
-          break;
+      case DERIVATIVE_IXY:
+        Ixy = (nw + -ne + -sw + se) / 4;
+        value = (int)Ixy;
+        break;
 
-        case DERIVATIVE_IXX:
-          Ixx = w + (-2 * c) + e;
-          value = (int) Ixx;
-          break;
+      case DERIVATIVE_IXX:
+        Ixx = w + (-2 * c) + e;
+        value = (int)Ixx;
+        break;
 
-        case DERIVATIVE_IYY:
-          Iyy = n + (-2 * c) + s;
-          value = (int) Iyy;
-          break;
+      case DERIVATIVE_IYY:
+        Iyy = n + (-2 * c) + s;
+        value = (int)Iyy;
+        break;
 
-        case DERIVATIVE_K:
-          Ix = (-w + e) / 2;
-          Iy = (-n + s) / 2;
-          Ixx = w + (-2 * c) + e;
-          Iyy = n + (-2 * c) + s;
-          Ixy = (nw + -ne + -sw + se) / 4;
-          k = (((Iy * Iy)) * Ixx - 2 * Ix * Ixy * Iy + Iyy * ((Ix * Ix))) /
-            (float) sqrt((1 + (Ix * Ix)+(Iy * Iy))*
-            (1 + (Ix * Ix)+(Iy * Iy))*
-            (1 + (Ix * Ix)+(Iy * Iy)));
-          value = (int) k;
-          break;
+      case DERIVATIVE_K:
+        Ix = (-w + e) / 2;
+        Iy = (-n + s) / 2;
+        Ixx = w + (-2 * c) + e;
+        Iyy = n + (-2 * c) + s;
+        Ixy = (nw + -ne + -sw + se) / 4;
+        k = (((Iy * Iy)) * Ixx - 2 * Ix * Ixy * Iy + Iyy * ((Ix * Ix))) /
+          (float)sqrt((1 + (Ix * Ix) + (Iy * Iy))*
+          (1 + (Ix * Ix) + (Iy * Iy))*
+          (1 + (Ix * Ix) + (Iy * Iy)));
+        value = (int)k;
+        break;
 
-        case DERIVATIVE_GM:
-          Ix = (-w + e) / 2;
-          Iy = (-n + s) / 2;
-          value = (int) sqrt(1 + (Ix * Ix)+(Iy * Iy));
-          break;
+      case DERIVATIVE_GM:
+        Ix = (-w + e) / 2;
+        Iy = (-n + s) / 2;
+        value = (int)sqrt(1 + (Ix * Ix) + (Iy * Iy));
+        break;
 
-        case DERIVATIVE_GD:
-          Ix = (-w + e) / 2;
-          Iy = (-n + s) / 2;
-          value = (int) atan2((double) Iy, (double) Ix);
-          break;
+      case DERIVATIVE_GD:
+        Ix = (-w + e) / 2;
+        Iy = (-n + s) / 2;
+        value = (int)atan2((double)Iy, (double)Ix);
+        break;
       }
 
       // update pixel

@@ -2,7 +2,7 @@
 // Image Processor
 //
 // IP reads image files and performs various operations
-// 
+//
 // ---------------------------------------------------------------------
 
 // system includes
@@ -51,14 +51,16 @@ int main(int argc, char **argv, char **envp) {
     else if (string(argv[i]) == "-o" || string(argv[i]) == "-output") {
       i++;
       outName = argv[i];
-    } else if (string(argv[i]) == "-image") {
+    }
+    else if (string(argv[i]) == "-image") {
       i++;
       Item *item = new Item();
       item->type = STRING;
       item->s = argv[i];
       script.Push(*item);
       script.imgRead();
-    } else {
+    }
+    else {
       cerr << "unknown parameter: '" << argv[i] << "' ignored" << endl;
     }
   }
