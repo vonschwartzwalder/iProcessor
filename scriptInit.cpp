@@ -106,6 +106,7 @@ void Script::init() {
 
   // components
   m->p = &Script::imgFindShapes; m->args = "image";        f["imgFindShapes"] = *m;
+  m->p = &Script::imgOverlayShapes; m->args = "image";     f["imgOverlayShapes"] = *m;
 
   // math
   m->p = &Script::imgAND;     m->args = "image";           f["imgAND"] = *m;

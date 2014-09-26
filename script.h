@@ -126,6 +126,7 @@ public:
   void imgConvolve();
 
   void imgFindShapes();
+  void imgOverlayShapes();
 
   void imgAND();
   /*

@@ -46,6 +46,17 @@ ostream &operator<<(ostream &out, Shape &s) {
   out << "  upper_left=" << s.upper_left << endl;
   out << "  lower_right=" << s.lower_right << endl;
 
+  // moments
+  out << "  m00=" << s.moments[0] << endl;
+  out << "  m10=" << s.moments[1] << endl;
+  out << "  m01=" << s.moments[2] << endl;
+  out << "  u11=" << s.moments[3] << endl;
+  out << "  u20=" << s.moments[4] << endl;
+  out << "  u02=" << s.moments[5] << endl;
+  out << "  X="   << s.moments[6] << endl;
+  out << "  Y="   << s.moments[7] << endl;
+  out << "  flow=" << s.flow << endl;
+
   // boundary
   out << "  boundary=(";
   for(iter = s.points.begin(); iter != s.points.end(); iter++) {
@@ -58,17 +69,6 @@ ostream &operator<<(ostream &out, Shape &s) {
     }
   }
   out << ")";
-
-  // moments
-  out << "  m00=" << s.moments[0] << endl;
-  out << "  m10=" << s.moments[1] << endl;
-  out << "  m01=" << s.moments[2] << endl;
-  out << "  u11=" << s.moments[3] << endl;
-  out << "  u20=" << s.moments[4] << endl;
-  out << "  u02=" << s.moments[5] << endl;
-  out << "  X="   << s.moments[6] << endl;
-  out << "  Y="   << s.moments[7] << endl;
-  out << "  flow=" << s.flow << endl;
 
   out << endl << "}" << endl;
 

@@ -79,8 +79,6 @@ void Image::findShapes() {
       }
     }
   }
-
-  overlay();
   
 } // findShapes
 

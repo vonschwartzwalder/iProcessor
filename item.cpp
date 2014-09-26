@@ -315,6 +315,14 @@ ostream &operator<<(ostream &out, Item &i) {
   else if (i.type == IMAGE) {
     out << i.i;
   }
+  else if (i.type == SHAPES) {
+    map<unsigned int, Shape>::iterator iter;
+    out << "[ ";
+    for (iter = i.sd.begin(); iter != i.sd.end(); iter++) {
+      out << iter->first << ":" << iter->second << " ";
+    }
+    out << "]";
+  }
 
   return out;
 
