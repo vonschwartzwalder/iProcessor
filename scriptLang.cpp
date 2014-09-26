@@ -42,6 +42,7 @@ void Script::print() {
   }
 
   // if the top of the stack contains an image, display the image
+  // TODO: search path instead of hard coding it
   if (s.top().type == IMAGE) {
     Item item;
     item = s.top();
@@ -50,6 +51,7 @@ void Script::print() {
     item.i->saveImage(name);
     string cmd = string("/usr/bin/display ") + name + " &";
     system(cmd.c_str());
+    return;
   }
 
   // print the top of the stack

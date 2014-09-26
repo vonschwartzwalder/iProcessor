@@ -123,7 +123,7 @@ public:
   void imgSobel();
   void imgConvolve();
 
-  void imgComponents();
+  void imgFindShapes();
 
   void imgAND();
   /*

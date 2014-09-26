@@ -446,6 +446,23 @@ void Image::dilate() {
   im = temp;
 }
 
+void Image::open(int depth = 1) {
+  for (int i = 0; i < depth; i++) {
+    erode();
+  }
+  for (int i = 0; i < depth; i++) {
+    dilate();
+  }
+}
+
+void Image::close(int depth = 1) {
+  for (int i = 0; i < depth; i++) {
+    dilate();
+  }
+  for (int i = 0; i < depth; i++) {
+    erode();
+  }
+}
 
 // -------------------------------------
 // invert the pixmap

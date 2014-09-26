@@ -7,6 +7,8 @@
 using namespace std;
 
 #include "pnm.h"
+#include "graph.h"
+#include "shape.h"
 
 #define MATH_AND 1
 #define MATH_OR  2
@@ -95,13 +97,52 @@ public:
   //void fft();
   //void dct();
   //void wavelet();
-  void CCD();
+  
+  // CCD
+  // shapes
+  int findShapes();                       // find all shapes in image
+
+  // internal CCD functions
+  // TODO: better Image integration
+  void remove_shape(int shape);           // remove a shape from list, dict and adjacency
+  int  fill4(Shape &s);                   // fill a region to create a shape
+  bool inBounds(int x, int y);            // legal coordinates?
+  int  contour(Shape &s);                 // chain around boundary of a shape
+  int  inner_contour4(Shape &s);          // chain around inside boundary of a shape
+  void next_inner_point4(Point &c, int color); // next point in a 4 contour
+  int  outer_contour4(Shape &s);          // chain around inside boundary of a shape
+  void next_outer_point4(Point &c, int color); // next point in a 4 contour
+  void outwardFlows();                    // calculate outward flow on all shapes
+  void outwardFlow(Shape &s);             // calculate outward flow on one shape
+  void smoothBoundaries(int width, double sigma); // smooth the boundary on all shapes
+  void smoothBoundary(Shape &s, double kernel[], int width); // smooth the boundary on one shape
+  void clearMask();                       // create a mask sized to image
+  void coalesce(bool debug, int coalesceLevels); // merge shapes
+  void drawShape(PNM *img, Shape &s, PNM_Color &c); // draw a shape on an image
+  void fillShape(PNM *image, Shape &shape, PNM_Color &fill);
+  void prune(bool debug, int pruneSize, bool leafOnly); // remove small shapes
+  bool readDB(bool debug, string inputDBName);
+  bool writeDB(bool debug, string outputDBName);
+  bool reconstruct(bool debug, string outputImageName);
+  
+  // I/O
+  void read(istream &in);             // read image from a stream
+  void write(ostream &out);           // save image to a stream
+  void dumpDictionary(ostream &out);  // write all the vertices in the dictionary
+  
+  // data
+  PNM image;                           // working image
+  PNM mask;                            // mask
+  Graph graph;                         // hierarchical information
+  map<unsigned int, Shape> dictionary; // dictionary of shapes
 
   // miscellaneous
   bool   dumpROI();
   bool   edge8(int x, int y, int color);
   bool   edge4(int x, int y, int color);
   int    range(int x, int y, int size);
+  
+  // TODO: move these to PNM or delete them
   int    calc_min_gray();
   int    calc_max_gray();
   double calc_mean_gray();

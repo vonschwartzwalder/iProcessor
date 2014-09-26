@@ -19,7 +19,7 @@ OBJECTS_DIR = ./
 
 # Files
 HNAMES = \
-	ccd \
+	gaussian \
 	graph \
 	image \
 	item \
@@ -31,9 +31,12 @@ HNAMES = \
 
 SNAMES = \
 	ccd \
+	coalesce \
 	derivative \
 	drawpolygon \
+	drawShape \
 	dumproi \
+	fillShape \
 	filter \
 	flow \
 	graph \
@@ -45,6 +48,9 @@ SNAMES = \
 	morphology \
 	pnm \
 	point \
+	prune \
+	readDB \
+	reconstruct \
 	saveimage \
 	script \
 	scriptImage \
@@ -53,6 +59,7 @@ SNAMES = \
 	shape \
 	utility \
 	uvdec \
+	writeDB \
 
 SOURCES       = $(addsuffix .cpp, $(SNAMES))
 HEADERS       = $(addsuffix .h, $(HNAMES))

@@ -18,6 +18,7 @@ public:
   Point();
   Point(const Point &p);
   Point(const int x, const int y);
+  Point(const int x, const int y, const int d);
 
   // destructor
   ~Point();
@@ -27,6 +28,8 @@ public:
   ostream &write(ostream &out);
   friend istream &operator<<(istream &in, Point &p);
   istream &read(istream &in);
+  void read();
+
   // methods
 
   // operators
@@ -45,8 +48,8 @@ public:
   // data
   int x;
   int y;
-  double d;
-
+  int d;
+  
 };
 
 istream &operator>>(istream &in, Point &p);

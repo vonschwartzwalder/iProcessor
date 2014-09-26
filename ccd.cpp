@@ -2,168 +2,263 @@
 //
 //  CCD implementation
 //
-//  Find all the shapes (objects, or connected components) in an image and create a tree
-//  the reflects the structure.
+//  Find all the shapes (objects, or connected components)
+//  in an image and create a graph that reflects the structure.
 //
 // --------------------------------------------------------
 
 #include <iostream>
+#include <string>
 #include <stack>
-#include <cmath>
+#include <list>
+#include <map>
+#include <set>
 using namespace std;
 
-#include "ccd.h"
-
-
-// default constructor
-CCD::CCD() {
-}
-
-// string constructor
-CCD::CCD(const string &name) {
-  read(name);
-  original_image = image;
-}
-
-// destructor
-CCD::~CCD() {
-}
-
-
-// --------------------------------------------------------
-// quantize the original image and put it in the working image
-// --------------------------------------------------------
-void CCD::quantize(int levels) {
-  cerr << "quantize no longer available" << endl;
-}
+#include "image.h"
+#include "gaussian.h"
 
 // --------------------------------------------------------
 // find all the connected components in the image
 // --------------------------------------------------------
-int CCD::find_shapes() {
+int Image::findShapes() {
 
   // local variables
+  image = PNM(im); // make a copy of the original
   int   pixel;
   Shape cur_shape;
   int   count = 1;
   int   cols = image.cols();
   int   rows = image.rows();
-  set<int> a;
 
-  // create generic arrays
-  image2gimage();
-  clear_mask();
+  // create and initialize mask
+  clearMask();
 
-  // add a dummy shape
+  // add an outer shape
   cur_shape.label = 0;
-  cur_shape.pixel_count = 0;
   cur_shape.area = 0;
   cur_shape.color = 255;
-  graph.add_vertex(cur_shape);
+  graph.addNode(0);
+  dictionary[0] = cur_shape;
 
   // --------------------------------------------------------
-  // process each pixel in image
+  // process each pixel in im
   // --------------------------------------------------------
-  for (int y = 0; y < rows; y++) {
-    for (int x = 0; x < cols; x++) {
+  for(int y = 0; y < rows; y++) {
+    for(int x = 0; x < cols; x++) {
 
       // if not visited
-      if (!mask[x + y * cols]) {
-
+      if(mask.gray(x, y) == 0) {
+        
         // get this pixel
-        pixel = gimage[x][y];
+        pixel = image.gray(x, y);
 
-        // create a new shape
+        // set up a new Shape object
         cur_shape.location.x = x;
         cur_shape.location.y = y;
         cur_shape.label = count;
         cur_shape.color = pixel;
 
         // fill shape
-        cur_shape.pixel_count = fill4(cur_shape);
-        cur_shape.area = cur_shape.pixel_count;
+        cur_shape.area = fill4(cur_shape);
 
-        // add shape to dict
-        graph.add_vertex(cur_shape);
+        // get contour
+        contour(cur_shape);
+        
+        // add shape to graph
+        graph.addNode(cur_shape.label);
+
+        // add shape to dictionary
+        dictionary[cur_shape.label] = cur_shape;
 
         count++;
       }
     }
   }
 
-  return(count - 1);
-
-} // find_shapes
-
+  return(count-1);
+  
+} // findShapes
 
 // --------------------------------------------------------
-// draw all the connected components in the image
+// dump all the nodes in the dictionary
 // --------------------------------------------------------
-void CCD::draw_shapes() {
+void Image::dumpDictionary(ostream &out) {
+  map<unsigned int, Shape>::iterator iter;
+  for(iter = dictionary.begin(); iter != dictionary.end(); iter++) {
+    out << iter->second;
+  }
+} // dumpDictionary
 
-  // copy image to generic array
-  image2cimage();
+// --------------------------------------------------------
+// calculate outward flow for all shapes
+// --------------------------------------------------------
+void Image::outwardFlows() {
 
-  Graph::d_iterator iter;
-  PNM_Color c(255, 255, 120);
+  map<unsigned int, Shape>::iterator iter;
 
   // for each shape
-  for (iter = graph.d_begin(); iter != graph.d_end(); iter++) {
-    if (iter->second.label > 0) {
-      draw_shape(iter->second, c);
+  for(iter = dictionary.begin(); iter != dictionary.end(); iter++) {
+    if(iter->second.label > 0) {
+      outwardFlow(iter->second);
     }
   }
 
-  // copy generic array to image
-  cimage2image();
-
-} // draw_shapes
-
+}
 
 // --------------------------------------------------------
-// draws a shape on the color image array
+// calculate outward flow as a figure of merit
 // --------------------------------------------------------
-void CCD::draw_shape(Shape &s, PNM_Color &c) {
+void Image::outwardFlow(Shape &shp) {
 
-  unsigned char r = c.red();
-  unsigned char g = c.green();
-  unsigned char b = c.blue();
-
-  // generate contour
-  s.perimeter = contour(s);
+  int x, y, i, j;
+  int grays[9];
+  int count;
+  double n, s, e, w;
+  double Ix, Iy;
+  double gm = 0.0;
 
   // for each point
   list<Point>::iterator iter;
-  for (iter = s.points.begin();
-    iter != s.points.end();
-    iter++) {
-    cimage[iter->x][iter->y][0] = r;
-    cimage[iter->x][iter->y][1] = g;
-    cimage[iter->x][iter->y][2] = b;
+  for(iter = shp.points.begin();
+      iter != shp.points.end();
+      iter++) {
+
+    x = iter->x;
+    y = iter->y;
+    
+    // 3x3 kernel
+    grays[0] = image.gray(x, y);
+    for(i = 1; i < 9; i++) {
+      grays[i] = grays[0];
+    }
+    count = 0;
+    for(j = y-1; j <= y+1; j++) {
+      for(i = x-1; i <= x+1; i++) {
+        try {
+          grays[count] = image.gray(i, j);
+        }
+        catch(PNM_ArrayException e) {}
+        count++;
+      }
+    }
+
+    // neighborhood
+    n  = (double)grays[1];
+    e  = (double)grays[5];
+    s  = (double)grays[7];
+    w  = (double)grays[3];
+
+    // derivatives using central differences
+    Ix = (-w + e)/2;
+    Iy = (-n + s)/2;
+    
+    // gradient magnitude
+    gm += sqrt((Ix*Ix)+(Iy*Iy));
+
   }
 
-} // draw_shape
+  // normalize
+  gm /= shp.points.size();
 
+  // save
+  shp.flow = gm;
+
+}
 
 // --------------------------------------------------------
-// dump_mask
-//
-//   writes the mask as an image
+// smooth the boundary of all shapes
+// using convolution with a Gaussian kernel
 // --------------------------------------------------------
-void CCD::dump_mask(string name) {
-  PNM timage = image;
-  int cols = image.cols();
-  int rows = image.rows();
+void Image::smoothBoundaries(int width, double sigma) {
 
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      timage.color(x, y, PNM_Color(mask[x][y], mask[x][y], mask[x][y]));
+  map<unsigned int, Shape>::iterator iter;
+
+  // initialize variables
+  double * kernel = new double[width];
+  Gaussian g;
+
+  // get a kernel
+  kernel = g.getKernel(width, sigma);
+
+  // for each shape
+  for(iter = dictionary.begin(); iter != dictionary.end(); iter++) {
+    if(iter->second.label > 0) {
+
+      // smooth the boundary
+      smoothBoundary(iter->second, kernel, width);
+
+      // remove duplicate points
     }
   }
-  timage.write(name);
 
-} // dump_mask
+}
 
+// --------------------------------------------------------
+// smooth the boundary of a shape
+// using convolution with a Gaussian kernel
+// --------------------------------------------------------
+void Image::smoothBoundary(Shape &s, double kernel[], int width) {
+
+  int i;
+  double sx, sy;
+  int x = -1, y = -1;
+  int cnt;
+  list<Point> npoints;
+  Point *npoint;
+  
+  // for each point
+  list<Point>::iterator fiter;
+  list<Point>::iterator citer;
+  list<Point>::iterator biter;
+  for(citer = s.points.begin();
+      citer != s.points.end();
+      citer++) {
+    fiter = citer;
+    biter = citer;
+
+    // back up biter to start of kernel
+    for(i = 0; i < width/2; i++) {
+      if(biter == s.points.begin()) {
+        biter = s.points.end();
+      }
+      biter--;
+    }
+
+    // move fiter to end of kernel
+    for(i = 0; i <= width/2; i++) {
+      fiter++;
+      if(fiter == s.points.end()) {
+        fiter = s.points.begin();
+      }
+    }
+
+    // move over kernel
+    sx = 0;
+    sy = 0;
+    cnt = 0;
+    while(biter != fiter) {
+      sx += biter->x * kernel[cnt];
+      sy += biter->y * kernel[cnt];
+      cnt++;
+      biter++;
+      if(biter == s.points.end()) {
+        biter = s.points.begin();
+      }
+    }
+
+    // add point to list
+    x = (int)rint(sx);
+    y = (int)rint(sy);
+    npoint = new Point(x, y, citer->d);
+    npoints.push_back(*npoint);
+      
+  }
+
+  // put new list in shape
+  s.points.swap(npoints);
+  
+}
 
 // -----------------------------------------------
 // fill a region
@@ -171,7 +266,7 @@ void CCD::dump_mask(string name) {
 // use a 4 connected model
 //
 // calculates region moments
-//
+// 
 // algorithm
 //   get start pixel color
 //   set mask for this pixel
@@ -190,7 +285,7 @@ void CCD::dump_mask(string name) {
 //           push location on stack
 //
 // -----------------------------------------------
-int CCD::fill4(Shape &s) {
+int Image::fill4(Shape &s) {
 
   // local variables
   int x = s.location.x;
@@ -215,13 +310,13 @@ int CCD::fill4(Shape &s) {
   double u11, u02, u20, X, Y;
 
   // first pixel
-  if (in_bounds(x, y)) {
-
+  if(inBounds(x, y)) {
+    
     // get start color
-    pix = gimage[x][y];
+    pix = image.gray(x, y);
 
     // set mask start pixel
-    mask[x][y] = lbl;
+    mask.gray(x, y, lbl);
     count++;
 
     // moments
@@ -231,7 +326,7 @@ int CCD::fill4(Shape &s) {
     m11 += x * y;
     m20 += x * x;
     m02 += y * y;
-
+    
     // min and max
     x_max = (x > x_max) ? x : x_max;
     y_max = (y > y_max) ? y : y_max;
@@ -244,59 +339,59 @@ int CCD::fill4(Shape &s) {
   }
 
   // check neighbors
-  if (in_bounds(x - 1, y)) {
-    if (gimage[x - 1][y] == pix && mask[x - 1][y] != lbl) {
-      stk.push(Point(x - 1, y));
+  if(inBounds(x-1, y)) {
+    if(image.gray(x-1, y) == pix && mask.gray(x-1, y) != lbl) {
+      stk.push(Point(x-1, y));
     }
-    else if (mask[x - 1][y] != 0) {
-      graph.add_edge(lbl, mask[x - 1][y]);
-    }
-  }
-  else {
-    graph.add_edge(lbl, 0);
-  }
-  if (in_bounds(x, y + 1)) {
-    if (gimage[x][y + 1] == pix && mask[x][y + 1] != lbl) {
-      stk.push(Point(x, y + 1));
-    }
-    else if (mask[x][y + 1] != 0) {
-      graph.add_edge(lbl, mask[x][y + 1]);
+    else if(mask.gray(x-1, y) != 0) {
+      graph.addEdge(lbl, mask.gray(x-1, y));
     }
   }
   else {
-    graph.add_edge(lbl, 0);
+    graph.addEdge(lbl, 0);
   }
-  if (in_bounds(x + 1, y)) {
-    if (gimage[x + 1][y] == pix && mask[x + 1][y] != lbl) {
-      stk.push(Point(x + 1, y));
+  if(inBounds(x, y+1)) {
+    if(image.gray(x, y+1) == pix && mask.gray(x, y+1) != lbl) {
+      stk.push(Point(x, y+1));
     }
-    else if (mask[x + 1][y] != 0) {
-      graph.add_edge(lbl, mask[x + 1][y]);
-    }
-  }
-  else {
-    graph.add_edge(lbl, 0);
-  }
-  if (in_bounds(x, y - 1)) {
-    if (gimage[x][y - 1] == pix && mask[x][y - 1] != lbl) {
-      stk.push(Point(x, y - 1));
-    }
-    else if (mask[x][y - 1] != 0) {
-      graph.add_edge(lbl, mask[x][y - 1]);
+    else if(mask.gray(x, y+1) != 0) {
+      graph.addEdge(lbl, mask.gray(x, y+1));
     }
   }
   else {
-    graph.add_edge(lbl, 0);
+    graph.addEdge(lbl, 0);
   }
-
+  if(inBounds(x+1, y)) {
+    if(image.gray(x+1, y) == pix && mask.gray(x+1, y) != lbl) {
+      stk.push(Point(x+1, y));
+    }
+    else if(mask.gray(x+1, y) != 0) {
+      graph.addEdge(lbl, mask.gray(x+1, y));
+    }
+  }
+  else {
+    graph.addEdge(lbl, 0);
+  }
+  if(inBounds(x, y-1)) {
+    if(image.gray(x, y-1) == pix && mask.gray(x, y-1) != lbl) {
+      stk.push(Point(x, y-1));
+    }
+    else if(mask.gray(x, y-1) != 0) {
+      graph.addEdge(lbl, mask.gray(x, y-1));
+    }
+  }
+  else {
+    graph.addEdge(lbl, 0);
+  }
+  
   // while stk not empty
-  while (!stk.empty()) {
+  while(! stk.empty()) {
 
     // fill pixel on stk
     loc = stk.top(); stk.pop();
-    if (in_bounds(loc.x, loc.y)) {
-      if (gimage[loc.x][loc.y] == pix && mask[loc.x][loc.y] != lbl) {
-        mask[loc.x][loc.y] = lbl;
+    if(inBounds(loc.x, loc.y)) {
+      if(image.gray(loc.x, loc.y) == pix && mask.gray(loc.x, loc.y) != lbl) {
+        mask.gray(loc.x, loc.y, lbl);
         count++;
 
         // moments
@@ -306,7 +401,7 @@ int CCD::fill4(Shape &s) {
         m11 += loc.x * loc.y;
         m20 += loc.x * loc.x;
         m02 += loc.y * loc.y;
-
+        
         // min and max
         x_max = (loc.x > x_max) ? loc.x : x_max;
         y_max = (loc.y > y_max) ? loc.y : y_max;
@@ -317,61 +412,66 @@ int CCD::fill4(Shape &s) {
     }
 
     // check neighbors
-    if (in_bounds(loc.x - 1, loc.y)) {
-      if (gimage[loc.x - 1][loc.y] == pix && mask[loc.x - 1][loc.y] != lbl) {
-        stk.push(Point(loc.x - 1, loc.y));
+    if(inBounds(loc.x-1, loc.y)) {
+      if(image.gray(loc.x-1, loc.y) == pix && mask.gray(loc.x-1, loc.y) != lbl) {
+        stk.push(Point(loc.x-1, loc.y));
       }
-      else if (mask[loc.x - 1][loc.y] != 0) {
-        graph.add_edge(lbl, mask[loc.x - 1][loc.y]);
-      }
-    }
-    else {
-      graph.add_edge(lbl, 0);
-    }
-    if (in_bounds(loc.x, loc.y + 1)) {
-      if (gimage[loc.x][loc.y + 1] == pix && mask[loc.x][loc.y + 1] != lbl) {
-        stk.push(Point(loc.x, loc.y + 1));
-      }
-      else if (mask[loc.x][loc.y + 1] != 0) {
-        graph.add_edge(lbl, mask[loc.x][loc.y + 1]);
+      else if(mask.gray(loc.x-1, loc.y) != 0) {
+        graph.addEdge(lbl, mask.gray(loc.x-1, loc.y));
       }
     }
     else {
-      graph.add_edge(lbl, 0);
+      graph.addEdge(lbl, 0);
     }
-    if (in_bounds(loc.x + 1, loc.y)) {
-      if (gimage[loc.x + 1][loc.y] == pix && mask[loc.x + 1][loc.y] != lbl) {
-        stk.push(Point(loc.x + 1, loc.y));
+    if(inBounds(loc.x, loc.y+1)) {
+      if(image.gray(loc.x, loc.y+1) == pix && mask.gray(loc.x, loc.y+1) != lbl) {
+        stk.push(Point(loc.x, loc.y+1));
       }
-      else if (mask[loc.x + 1][loc.y] != 0) {
-        graph.add_edge(lbl, mask[loc.x + 1][loc.y]);
-      }
-    }
-    else {
-      graph.add_edge(lbl, 0);
-    }
-    if (in_bounds(loc.x, loc.y - 1)) {
-      if (gimage[loc.x][loc.y - 1] == pix && mask[loc.x][loc.y - 1] != lbl) {
-        stk.push(Point(loc.x, loc.y - 1));
-      }
-      else if (mask[loc.x][loc.y - 1] != 0) {
-        graph.add_edge(lbl, mask[loc.x][loc.y - 1]);
+      else if(mask.gray(loc.x, loc.y+1) != 0) {
+        graph.addEdge(lbl, mask.gray(loc.x, loc.y+1));
       }
     }
     else {
-      graph.add_edge(lbl, 0);
+      graph.addEdge(lbl, 0);
     }
-
+    if(inBounds(loc.x+1, loc.y)) {
+      if(image.gray(loc.x+1, loc.y) == pix && mask.gray(loc.x+1, loc.y) != lbl) {
+        stk.push(Point(loc.x+1, loc.y));
+      }
+      else if(mask.gray(loc.x+1, loc.y) != 0) {
+        graph.addEdge(lbl, mask.gray(loc.x+1, loc.y));
+      }
+    }
+    else {
+      graph.addEdge(lbl, 0);
+    }
+    if(inBounds(loc.x, loc.y-1)) {
+      if(image.gray(loc.x, loc.y-1) == pix && mask.gray(loc.x, loc.y-1) != lbl) {
+        stk.push(Point(loc.x, loc.y-1));
+      }
+      else if(mask.gray(loc.x, loc.y-1) != 0) {
+        graph.addEdge(lbl, mask.gray(loc.x, loc.y-1));
+      }
+    }
+    else {
+      graph.addEdge(lbl, 0);
+    }
+    
   }
 
   // central moments calculation
-  u11 = m11 - (m10 * m01) / m00;
-  u20 = m20 - (m10 * m10) / m00;
-  u02 = m02 - (m01 * m01) / m00;
+  u11 = m11 - ((m10 * m01)/m00);
+  u20 = m20 - ((m10 * m10)/m00);
+  u02 = m02 - ((m01 * m01)/m00);
+
+  // normalize central moments
+  u11 = u11/(m00 * m00);
+  u20 = u20/(m00 * m00);
+  u02 = u02/(m00 * m00);
 
   // moment invariants
   X = u20 + u02;  // spread
-  Y = sqrt((u20 - u02) * (u20 - u02) + (4.0 * (u11 * u11))); // slenderness
+  Y = sqrt(((u20 - u02) * (u20 - u02)) + (4.0 * (u11 * u11))); // slenderness
 
   // moments array
   s.moments[0] = m00;
@@ -384,8 +484,8 @@ int CCD::fill4(Shape &s) {
   s.moments[7] = Y;
 
   // centroid
-  s.centroid.x = (int)(m10 / m00);
-  s.centroid.y = (int)(m01 / m00);
+  s.centroid.x = (int)(m10/m00);
+  s.centroid.y = (int)(m01/m00);
 
   // bounding box
   s.upper_left.x = x_min;
@@ -397,118 +497,11 @@ int CCD::fill4(Shape &s) {
 }
 
 // -----------------------------------------------
-// fill a shape
-//
-// use a 4 connected model
-//
-// algorithm
-//   fill first pixel with color
-//   for each neighbor
-//     if this is a shape pixel that hasn't been filled
-//       push location on stack
-//   while stack not empty
-//     pop location
-//     fill this pixel
-//     for each neighbor
-//       if this is a shape pixel that hasn't been filled
-//         push location on stack
-// -----------------------------------------------
-void CCD::fillShape(Shape shape, int color) {
-
-  // local variables
-  Point loc;
-  stack<Point> stack;
-  int x, y;
-  PNM_Color pixel;
-  PNM_Color fill(color, color, color);
-
-  // get starting location
-  x = shape.location.x;
-  y = shape.location.y;
-
-  // fill start pixel
-  if (in_bounds(x, y)) {
-    pixel = image.color(x, y);
-    if (mask[x][y] == shape.label && pixel != fill) {
-      image.color(x, y, fill);
-    }
-  }
-  else {
-    return;
-  }
-
-  // look at neighbors
-  if (in_bounds(x - 1, y)) {
-    pixel = image.color(x - 1, y);
-    if (mask[x - 1][y] == shape.label && pixel != fill) {
-      stack.push(Point(x - 1, y));
-    }
-  }
-  if (in_bounds(x, y + 1)) {
-    pixel = image.color(x, y + 1);
-    if (mask[x][y + 1] == shape.label && pixel != fill) {
-      stack.push(Point(x, y + 1));
-    }
-  }
-  if (in_bounds(x + 1, y)) {
-    pixel = image.color(x + 1, y);
-    if (mask[x + 1][y] == shape.label && pixel != fill) {
-      stack.push(Point(x + 1, y));
-    }
-  }
-  if (in_bounds(x, y - 1)) {
-    pixel = image.color(x, y - 1);
-    if (mask[x][y - 1] == shape.label && pixel != fill) {
-      stack.push(Point(x, y - 1));
-    }
-  }
-
-  // while stack not empty
-  while (!stack.empty()) {
-
-    loc = stack.top(); stack.pop();
-    x = loc.x;
-    y = loc.y;
-
-    // fill pixel on stack
-    image.color(x, y, fill);
-
-    // look at neighbors
-    if (in_bounds(x - 1, y)) {
-      pixel = image.color(x - 1, y);
-      if (mask[x - 1][y] == shape.label && pixel != fill) {
-        stack.push(Point(x - 1, y));
-      }
-    }
-    if (in_bounds(x, y + 1)) {
-      pixel = image.color(x, y + 1);
-      if (mask[x][y + 1] == shape.label && pixel != fill) {
-        stack.push(Point(x, y + 1));
-      }
-    }
-    if (in_bounds(x + 1, y)) {
-      pixel = image.color(x + 1, y);
-      if (mask[x + 1][y] == shape.label && pixel != fill) {
-        stack.push(Point(x + 1, y));
-      }
-    }
-    if (in_bounds(x, y - 1)) {
-      pixel = image.color(x, y - 1);
-      if (mask[x][y - 1] == shape.label && pixel != fill) {
-        stack.push(Point(x, y - 1));
-      }
-    }
-
-  }
-
-}
-
-// -----------------------------------------------
 // contour
 //   find the boundary of a shape
 //   and build an adjacency list of object
 // -----------------------------------------------
-int CCD::contour(Shape &s) {
+int Image::contour(Shape &s) {
   return(inner_contour4(s));
 }
 
@@ -524,13 +517,13 @@ int CCD::contour(Shape &s) {
 //       add to adjacency list
 //   until current position is the start pixel
 // -----------------------------------------------
-int CCD::inner_contour4(Shape &s) {
+int Image::inner_contour4(Shape &s) {
 
   Point start;
   Point cpoint;
   int cnt = 0;
   int color = s.color;
-  int label;
+  unsigned int label;
   int x, y;
   bool done = false;
 
@@ -556,62 +549,62 @@ int CCD::inner_contour4(Shape &s) {
     // check region for adjacent shapes
     x = cpoint.x;
     y = cpoint.y;
-    if (in_bounds(x, y - 1)) {
-      label = mask[x][y - 1];
-      if (label != 0 && label != s.label) {
-        graph.add_edge(label, s.label);
+    if(inBounds(x , y-1)) {
+      label = mask.gray(x, y-1);
+      if(label != 0 && label != s.label) {
+        graph.addEdge(label, s.label);
       }
     }
     else {
-      graph.add_edge(0, s.label);
+      graph.addEdge(0, s.label);
     }
-    if (in_bounds(x + 1, y)) {
-      label = mask[x + 1][y];
-      if (label != 0 && label != s.label) {
-        graph.add_edge(label, s.label);
+    if(inBounds(x+1, y)) {
+      label = mask.gray(x+1, y);
+      if(label != 0 && label != s.label) {
+        graph.addEdge(label, s.label);
       }
     }
     else {
-      graph.add_edge(0, s.label);
+      graph.addEdge(0, s.label);
     }
-    if (in_bounds(x, y + 1)) {
-      label = mask[x][y + 1];
-      if (label != 0 && label != s.label) {
-        graph.add_edge(label, s.label);
+    if(inBounds(x ,y+1)) {
+      label = mask.gray(x, y+1);
+      if(label != 0 && label != s.label) {
+        graph.addEdge(label, s.label);
       }
     }
     else {
-      graph.add_edge(0, s.label);
+      graph.addEdge(0, s.label);
     }
-    if (in_bounds(x - 1, y)) {
-      label = mask[x - 1][y];
-      if (label != 0 && label != s.label) {
-        graph.add_edge(label, s.label);
+    if(inBounds(x-1, y)) {
+      label = mask.gray(x-1, y);
+      if(label != 0 && label != s.label) {
+        graph.addEdge(label, s.label);
       }
     }
     else {
-      graph.add_edge(0, s.label);
+      graph.addEdge(0, s.label);
     }
 
     cnt++;
 
     // see if this is really the end
-    if (cpoint == start) {
+    if(cpoint == start) {
       done = true;
-      if (cpoint.d == 3) {
-        if (in_bounds(start.x, start.y + 1) &&
-          gimage[start.x][start.y + 1] == color) {
+      if(cpoint.d == 3) {
+        if(inBounds(start.x, start.y + 1) &&
+           image.gray(start.x, start.y+1) == color) {
           cpoint.d = 3;
           next_inner_point4(cpoint, color);
-          if (!(cpoint == start)) {
+          if(!(cpoint == start)) {
             done = false;
             s.points.push_back(cpoint);
           }
         }
       }
     }
-
-  } while (!done);
+    
+  } while(!done);
 
   return cnt;
 }
@@ -633,7 +626,7 @@ int CCD::inner_contour4(Shape &s) {
 //
 // algorithm
 // -----------------------------------------------
-void CCD::next_inner_point4(Point &c, int color) {
+void Image::next_inner_point4(Point &c, int color) {
 
   int dir;
   int nhood[4];   // neighborhood of pixels
@@ -642,45 +635,45 @@ void CCD::next_inner_point4(Point &c, int color) {
   int y = c.y;
 
   // initialize nhood
-  for (int i = 0; i < 4; i++) {
+  for(int i = 0; i < 4; i++) {
     nhood[i] = -1;
   }
 
   // get neighbors
-  if (in_bounds(x, y - 1)) {      // 0
-    nhood[0] = gimage[x][y - 1];
+  if(inBounds(x , y-1)) {      // 0
+    nhood[0] = image.gray(x, y-1);
   }
-  if (in_bounds(x + 1, y)) {       // 1
-    nhood[1] = gimage[x + 1][y];
+  if(inBounds(x+1, y)) {       // 1
+    nhood[1] = image.gray(x+1, y);
   }
-  if (in_bounds(x, y + 1)) {       // 2
-    nhood[2] = gimage[x][y + 1];
+  if(inBounds(x ,y+1)) {       // 2
+    nhood[2] = image.gray(x, y+1);
   }
-  if (in_bounds(x - 1, y)) {       // 3
-    nhood[3] = gimage[x - 1][y];
+  if(inBounds(x-1, y)) {       // 3
+    nhood[3] = image.gray(x-1, y);
   }
-
+  
   // set start direction
   dir = ((c.d - 1) < 0) ? 3 : c.d - 1;
 
   // look for new direction
   bool found = false;
-  if (nhood[dir] == color) {
+  if(nhood[dir] == color) {
     found = true;
   }
   else {
-    dir = (dir + 1) % 4;
-    if (nhood[dir] == color) {
+    dir = (dir+1) % 4;
+    if(nhood[dir] == color) {
       found = true;
     }
     else {
-      dir = (dir + 1) % 4;
-      if (nhood[dir] == color) {
+      dir = (dir+1) % 4;
+      if(nhood[dir] == color) {
         found = true;
       }
       else {
-        dir = (dir + 1) % 4;
-        if (nhood[dir] == color) {
+        dir = (dir+1) % 4;
+        if(nhood[dir] == color) {
           found = true;
         }
       }
@@ -688,7 +681,7 @@ void CCD::next_inner_point4(Point &c, int color) {
   }
 
   // isolated pixel?
-  if (!found) {
+  if(!found) {
     return;
   }
 
@@ -696,19 +689,19 @@ void CCD::next_inner_point4(Point &c, int color) {
   c.d = dir;
 
   // set new location
-  switch (dir) {
-  case 0:
-    c.y = y - 1;
-    break;
-  case 1:
-    c.x = x + 1;
-    break;
-  case 2:
-    c.y = y + 1;
-    break;
-  case 3:
-    c.x = x - 1;
-    break;
+  switch(dir) {
+    case 0:
+      c.y = y - 1;
+      break;
+    case 1:
+      c.x = x + 1;
+      break;
+    case 2:
+      c.y = y + 1;
+      break;
+    case 3:
+      c.x = x - 1;
+      break;
   }
 
 }
@@ -726,13 +719,13 @@ void CCD::next_inner_point4(Point &c, int color) {
 //       add to adjacency list
 //   until current position is the start pixel
 // -----------------------------------------------
-int CCD::outer_contour4(Shape &s) {
+int Image::outer_contour4(Shape &s) {
 
   Point start;
   Point cpoint;
   int cnt = 0;
   int color = s.color;
-  int label;
+  unsigned int label;
 
   // start one pixel to the left
   cpoint = s.location;
@@ -756,14 +749,14 @@ int CCD::outer_contour4(Shape &s) {
     s.points.push_back(cpoint);
 
     // add point to adjacency list
-    label = mask[cpoint.x][cpoint.y];
-    if (label != 0 && label != s.label) {
-      graph.add_edge(label, s.label);
+    label = mask.gray(cpoint.x, cpoint.y);
+    if(label != 0 && label != s.label) {
+      graph.addEdge(label, s.label);
     }
 
     cnt++;
 
-  } while (!(cpoint == start));
+  } while(!(cpoint == start));
 
   return cnt;
 }
@@ -785,7 +778,7 @@ int CCD::outer_contour4(Shape &s) {
 //
 // algorithm
 // -----------------------------------------------
-void CCD::next_outer_point4(Point &c, int color) {
+void Image::next_outer_point4(Point &c, int color) {
 
   int dir;
   int nhood[4];   // neighborhood of pixels
@@ -794,22 +787,22 @@ void CCD::next_outer_point4(Point &c, int color) {
   int y = c.y;
 
   // initialize nhood
-  for (int i = 0; i < 4; i++) {
+  for(int i = 0; i < 4; i++) {
     nhood[i] = -1;
   }
 
   // get neighbors
-  if (in_bounds(x, y - 1)) {      // 0
-    nhood[0] = gimage[x][y - 1];
+  if(inBounds(x , y-1)) {      // 0
+    nhood[0] = image.gray(x, y-1);
   }
-  if (in_bounds(x + 1, y)) {       // 1
-    nhood[1] = gimage[x + 1][y];
+  if(inBounds(x+1, y)) {       // 1
+    nhood[1] = image.gray(x+1, y);
   }
-  if (in_bounds(x, y + 1)) {       // 2
-    nhood[2] = gimage[x][y + 1];
+  if(inBounds(x ,y+1)) {       // 2
+    nhood[2] = image.gray(x, y+1);
   }
-  if (in_bounds(x - 1, y)) {       // 3
-    nhood[3] = gimage[x - 1][y];
+  if(inBounds(x-1, y)) {       // 3
+    nhood[3] = image.gray(x-1, y);
   }
 
   // set start direction
@@ -817,22 +810,22 @@ void CCD::next_outer_point4(Point &c, int color) {
 
   // look for new direction
   bool found = false;
-  if (nhood[dir] != color) {
+  if(nhood[dir] != color) {
     found = true;
   }
   else {
-    dir = (dir + 1) % 4;
-    if (nhood[dir] != color) {
+    dir = (dir+1) % 4;
+    if(nhood[dir] != color) {
       found = true;
     }
     else {
-      dir = (dir + 1) % 4;
-      if (nhood[dir] != color) {
+      dir = (dir+1) % 4;
+      if(nhood[dir] != color) {
         found = true;
       }
       else {
-        dir = (dir + 1) % 4;
-        if (nhood[dir] != color) {
+        dir = (dir+1) % 4;
+        if(nhood[dir] != color) {
           found = true;
         }
       }
@@ -840,7 +833,7 @@ void CCD::next_outer_point4(Point &c, int color) {
   }
 
   // isolated pixel?
-  if (!found) {
+  if(!found) {
     return;
   }
 
@@ -848,177 +841,48 @@ void CCD::next_outer_point4(Point &c, int color) {
   c.d = dir;
 
   // set new location
-  switch (dir) {
-  case 0:
-    c.y = y - 1;
-    break;
-  case 1:
-    c.x = x + 1;
-    break;
-  case 2:
-    c.y = y + 1;
-    break;
-  case 3:
-    c.x = x - 1;
-    break;
+  switch(dir) {
+    case 0:
+      c.y = y - 1;
+      break;
+    case 1:
+      c.x = x + 1;
+      break;
+    case 2:
+      c.y = y + 1;
+      break;
+    case 3:
+      c.x = x - 1;
+      break;
   }
-
-}
-
-
-// --------------------------------------------------------
-// recreate the image from shapes
-// --------------------------------------------------------
-void CCD::reconstruct() {
-
-  // copy image to generic array
-  image2gimage();
-
-  Graph::d_iterator iter;
-  PNM_Color c(255, 255, 120);
-
-  // for each shape
-  for (iter = graph.d_begin(); iter != graph.d_end(); iter++) {
-    if (iter->second.label != 0) {
-      c = PNM_Color(iter->second.color, iter->second.color, iter->second.color);
-      //fillShape(iter->second, c);
-    }
-  }
-
-  // copy generic array to image
-  gimage2image();
 
 }
 
 // --------------------------------------------------------
 // read an image
 // --------------------------------------------------------
-void CCD::read(const string &name) {
-  image.read(name);
+void Image::read(istream &in) {
+  image.read(in);
 }
 
 // --------------------------------------------------------
-// write the image
+// write the im
 // --------------------------------------------------------
-void CCD::write(const string &name) {
-  image.write(name);
+void Image::write(ostream &out) {
+  image.write(out);
 }
 
 // --------------------------------------------------------
-// in_bounds
+// inBounds
 // --------------------------------------------------------
-bool CCD::in_bounds(int x, int y) {
-  static int cols = image.cols();
-  static int rows = image.rows();
-  if ((x >= 0 && x < cols) && (y >= 0 && y < rows)) {
-    return true;
-  }
-  return false;
-} // in_bounds()
-
+bool Image::inBounds(int x, int y) {
+  return image.valid(x, y);
+} // inBounds()
 
 // --------------------------------------------------------
-// image2gimage
+// clearMask
 // --------------------------------------------------------
-void CCD::image2gimage() {
-
-  int cols = image.cols();
-  int rows = image.rows();
-
-  // allocate new array
-  gimage = new unsigned char *[cols];
-  for (int i = 0; i < cols; i++) {
-    gimage[i] = new unsigned char[rows];
-  }
-
-  // copy data
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      gimage[x][y] = image.gray(x, y);
-    }
-  }
-
+void Image::clearMask() {
+  mask = PNM(image.cols(), image.rows(), PNM::typePGM);
+  mask = 0;
 }
-
-// --------------------------------------------------------
-// image2cimage
-// --------------------------------------------------------
-void CCD::image2cimage() {
-
-  int cols = image.cols();
-  int rows = image.rows();
-  int planes = 3;
-
-  cimage = new unsigned char **[cols];
-  for (int i = 0; i < cols; i++) {
-    cimage[i] = new unsigned char *[rows];
-    for (int j = 0; j < rows; j++) {
-      cimage[i][j] = new unsigned char[planes];
-    }
-  }
-
-  // copy data
-  PNM_Color color;
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      color = image.color(x, y);
-      cimage[x][y][0] = color.red();
-      cimage[x][y][1] = color.green();
-      cimage[x][y][2] = color.blue();
-    }
-  }
-
-}
-
-// --------------------------------------------------------
-// clear_mask
-// --------------------------------------------------------
-void CCD::clear_mask() {
-
-  int cols = image.cols();
-  int rows = image.rows();
-
-  // allocate new array
-  mask = new int *[cols];
-  for (int i = 0; i < cols; i++) {
-    mask[i] = new int[rows];
-  }
-
-  // clear data
-  for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows; j++) {
-      mask[i][j] = 0;
-    }
-  }
-}
-
-// --------------------------------------------------------
-// gimage2image
-// --------------------------------------------------------
-void CCD::gimage2image() {
-  int cols = image.cols();
-  int rows = image.rows();
-
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      image.color(x, y, PNM_Color(gimage[x][y], gimage[x][y], gimage[x][y]));
-    }
-  }
-}
-
-// --------------------------------------------------------
-// cimage2image
-// --------------------------------------------------------
-void CCD::cimage2image() {
-  int cols = image.cols();
-  int rows = image.rows();
-
-  image.convert(PNM::typePPM);
-
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      image.color(x, y, PNM_Color(cimage[x][y][0], cimage[x][y][1], cimage[x][y][2]));
-    }
-  }
-}
-

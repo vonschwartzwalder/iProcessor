@@ -102,6 +102,9 @@ void Script::init() {
   m->p = &Script::imgSobel;   m->args = "image";           f["imgSobel"] = *m;
   m->p = &Script::imgConvolve; m->args = "kernel";         f["imgConvolve"] = *m;
 
+  // components
+  m->p = &Script::imgFindShapes; m->args = "image";        f["imgFindShapes"] = *m;
+
   // math
   m->p = &Script::imgAND;     m->args = "image";           f["imgAND"] = *m;
   /*

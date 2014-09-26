@@ -8,12 +8,10 @@ using namespace std;
 #include "image.h"
 
 // constructor
-
 Image::Image() {
 }
 
 // script constructor
-
 Image::Image(const string &filename) {
 
   // initialize data members
@@ -30,31 +28,5 @@ Image::Image(const string &filename) {
 }
 
 // destructor
-
 Image::~Image() {
-}
-
-// -------------------------------------
-// morphology
-//
-//   open
-//   close
-// -------------------------------------
-
-void Image::open(int depth = 1) {
-  for (int i = 0; i < depth; i++) {
-    erode();
-  }
-  for (int i = 0; i < depth; i++) {
-    dilate();
-  }
-}
-
-void Image::close(int depth = 1) {
-  for (int i = 0; i < depth; i++) {
-    dilate();
-  }
-  for (int i = 0; i < depth; i++) {
-    erode();
-  }
 }
