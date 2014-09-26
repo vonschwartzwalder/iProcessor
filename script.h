@@ -116,6 +116,8 @@ public:
   void imgIntensity();
   void imgErode();
   void imgDilate();
+  void imgOpen();
+  void imgClose();
 
   void imgLaplacian();
   void imgMedian();

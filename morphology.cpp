@@ -292,9 +292,9 @@ int Image::threshold_otsu() {
 }
 
 // -------------------------------------
-// erode
+// dilate
 // -------------------------------------
-void Image::erode() {
+void Image::dilate() {
 
   int x, y, i, j;
   int gray;
@@ -304,7 +304,7 @@ void Image::erode() {
   PNM temp = *new PNM(im);
 
   switch (im.type()) {
-  case 1:
+    case 1:
     for (y = 0; y < im.rows(); y++) {
       for (x = 0; x < im.cols(); x++) {
         gray = im.gray(x, y);
@@ -326,7 +326,7 @@ void Image::erode() {
       }
     }
     break;
-  case 2:
+    case 2:
     for (y = 0; y < im.rows(); y++) {
       for (x = 0; x < im.cols(); x++) {
         max = 0;
@@ -342,7 +342,7 @@ void Image::erode() {
       }
     }
     break;
-  case 3:
+    case 3:
     for (y = 0; y < im.rows(); y++) {
       for (x = 0; x < im.cols(); x++) {
         maxR = 0;
@@ -370,9 +370,9 @@ void Image::erode() {
 
 
 // -------------------------------------
-// dilate
+// erode
 // -------------------------------------
-void Image::dilate() {
+void Image::erode() {
 
   int x, y, i, j;
   int gray;

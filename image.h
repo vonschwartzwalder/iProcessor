@@ -98,12 +98,9 @@ public:
   //void dct();
   //void wavelet();
   
-  // CCD
-  // shapes
-  int findShapes();                       // find all shapes in image
-
   // internal CCD functions
   // TODO: better Image integration
+  void findShapes();                      // find all shapes in image
   void remove_shape(int shape);           // remove a shape from list, dict and adjacency
   int  fill4(Shape &s);                   // fill a region to create a shape
   bool inBounds(int x, int y);            // legal coordinates?
@@ -124,6 +121,7 @@ public:
   bool readDB(bool debug, string inputDBName);
   bool writeDB(bool debug, string outputDBName);
   bool reconstruct(bool debug, string outputImageName);
+  void overlay();
   
   // I/O
   void read(istream &in);             // read image from a stream

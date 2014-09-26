@@ -264,6 +264,54 @@ void Script::imgDilate() {
   s.push(item);
 }
 
+void Script::imgOpen() {
+  if (s.size() < 2) {
+    cerr << "stack underflow" << endl;
+    return;
+  }
+  if (s.top().type != NUMBER) {
+    s.pop();
+    cerr << "invalid type, expected a number" << endl;
+    return;
+  }
+  double depth = s.top().n; s.pop();
+  if (s.top().type != IMAGE) {
+    s.pop();
+    cerr << "invalid type, expected an image" << endl;
+    return;
+  }
+  image = s.top().i; s.pop();
+  image->open((int)depth);
+  Item item;
+  item.type = IMAGE;
+  item.i = image;
+  s.push(item);
+}
+
+void Script::imgClose() {
+  if (s.size() < 2) {
+    cerr << "stack underflow" << endl;
+    return;
+  }
+  if (s.top().type != NUMBER) {
+    s.pop();
+    cerr << "invalid type, expected a number" << endl;
+    return;
+  }
+  double depth = s.top().n; s.pop();
+  if (s.top().type != IMAGE) {
+    s.pop();
+    cerr << "invalid type, expected an image" << endl;
+    return;
+  }
+  image = s.top().i; s.pop();
+  image->close((int)depth);
+  Item item;
+  item.type = IMAGE;
+  item.i = image;
+  s.push(item);
+}
+
 void Script::imgLaplacian() {
   if (s.size() < 1) {
     cerr << "stack underflow" << endl;

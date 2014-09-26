@@ -46,6 +46,7 @@ SNAMES = \
 	main \
 	math \
 	morphology \
+	overlay \
 	pnm \
 	point \
 	prune \

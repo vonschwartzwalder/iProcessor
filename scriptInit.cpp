@@ -94,6 +94,8 @@ void Script::init() {
   m->p = &Script::imgIntensity; m->args = "image";         f["imgIntensity"] = *m;
   m->p = &Script::imgErode;   m->args = "image";           f["imgErode"] = *m;
   m->p = &Script::imgDilate;  m->args = "image";           f["imgDilate"] = *m;
+  m->p = &Script::imgOpen;    m->args = "depth, image";    f["imgOpen"] = *m;
+  m->p = &Script::imgClose;   m->args = "depth, image";    f["imgClose"] = *m;
 
   // filter
   m->p = &Script::imgLaplacian;  m->args = "image";        f["imgLaplacian"] = *m;

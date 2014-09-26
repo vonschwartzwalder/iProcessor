@@ -21,7 +21,7 @@ using namespace std;
 // --------------------------------------------------------
 // find all the connected components in the image
 // --------------------------------------------------------
-int Image::findShapes() {
+void Image::findShapes() {
 
   // local variables
   image = PNM(im); // make a copy of the original
@@ -33,6 +33,10 @@ int Image::findShapes() {
 
   // create and initialize mask
   clearMask();
+  
+  // initialize structure
+  graph = Graph();
+  dictionary = map<unsigned int, Shape>();
 
   // add an outer shape
   cur_shape.label = 0;
@@ -76,7 +80,7 @@ int Image::findShapes() {
     }
   }
 
-  return(count-1);
+  overlay();
   
 } // findShapes
 
