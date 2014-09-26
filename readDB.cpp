@@ -1,10 +1,10 @@
+#include <time.h>
 #include <iostream>
 #include <string>
 
 using namespace std;
 
 #include "image.h"
-
 
 bool Image::readDB(bool debug, string inputDBName) {
 

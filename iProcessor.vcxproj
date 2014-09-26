@@ -79,10 +79,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ccd.cpp" />
+    <ClCompile Include="coalesce.cpp" />
+    <ClCompile Include="drawShape.cpp" />
+    <ClCompile Include="dumproi.cpp" />
+    <ClCompile Include="fillShape.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="drawpolygon.cpp" />
+    <ClCompile Include="overlay.cpp" />
     <ClCompile Include="pnm.cpp" />
     <ClCompile Include="point.cpp" />
+    <ClCompile Include="prune.cpp" />
+    <ClCompile Include="readDB.cpp" />
+    <ClCompile Include="reconstruct.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="derivative.cpp" />
     <ClCompile Include="filter.cpp" />
@@ -99,9 +107,10 @@
     <ClCompile Include="scriptLang.cpp" />
     <ClCompile Include="utility.cpp" />
     <ClCompile Include="uvdec.cpp" />
+    <ClCompile Include="writeDB.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ccd.h" />
+    <ClInclude Include="gaussian.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="pnm.h" />
     <ClInclude Include="point.h" />
