@@ -127,6 +127,11 @@ public:
 
   void imgFindShapes();
   void imgOverlayShapes();
+  
+  void imgToHSV();
+  void imgPlane();
+  void imgQuantize();
+  void imgClear();
 
   void imgAND();
   /*

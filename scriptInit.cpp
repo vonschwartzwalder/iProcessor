@@ -99,14 +99,20 @@ void Script::init() {
 
   // filter
   m->p = &Script::imgLaplacian;  m->args = "image";        f["imgLaplacian"] = *m;
-  m->p = &Script::imgMedian;  m->args = "image";           f["imgMedian"] = *m;
-  m->p = &Script::imgSmooth;  m->args = "image";           f["imgSmooth"] = *m;
-  m->p = &Script::imgSobel;   m->args = "image";           f["imgSobel"] = *m;
+  m->p = &Script::imgMedian;   m->args = "image";           f["imgMedian"] = *m;
+  m->p = &Script::imgSmooth;   m->args = "image";           f["imgSmooth"] = *m;
+  m->p = &Script::imgSobel;    m->args = "image";           f["imgSobel"] = *m;
   m->p = &Script::imgConvolve; m->args = "kernel";         f["imgConvolve"] = *m;
 
   // components
   m->p = &Script::imgFindShapes; m->args = "image";        f["imgFindShapes"] = *m;
   m->p = &Script::imgOverlayShapes; m->args = "image";     f["imgOverlayShapes"] = *m;
+  
+  // utility
+  m->p = &Script::imgToHSV;    m->args = "image";          f["imgToHSV"] = *m;
+  m->p = &Script::imgPlane;    m->args = "plane";          f["imgPlane"] = *m;
+  m->p = &Script::imgQuantize; m->args = "plane, levels";  f["imgQuantize"] = *m;
+  m->p = &Script::imgClear;    m->args = "value";          f["imgClear"] = *m;
 
   // math
   m->p = &Script::imgAND;     m->args = "image";           f["imgAND"] = *m;

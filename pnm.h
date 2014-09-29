@@ -5,6 +5,9 @@
 #ifndef PNM_H
 #define PNM_H
 
+#define MIN(a, b, c) (a < b ? a : b) < c ? (a < b ? a : b) : c
+#define MAX(a, b, c) (a > b ? a : b) > c ? (a > b ? a : b) : c
+
 // ------------------------
 // PNM class declaration
 // ------------------------
@@ -42,6 +45,8 @@ using namespace std;
 // [G] = [-0.969256  1.875992  0.041556] * [Y]
 // [B]   [ 0.055648 -0.204043  1.057311]   [Z]
 //
+// HSV conversions from www.easyrgb.com
+//
 // RGB to HSV
 //    var_R = ( R / 255 )                     //RGB from 0 to 255
 //    var_G = ( G / 255 )
@@ -73,6 +78,34 @@ using namespace std;
 //       if ( H < 0 ) H += 1
 //       if ( H > 1 ) H -= 1
 //    }
+//
+// HSV to RGB
+//    if ( S == 0 )                       //HSV from 0 to 1
+//    {
+//       R = V * 255
+//       G = V * 255
+//       B = V * 255
+//    }
+//    else
+//    {
+//       var_h = H * 6
+//       if ( var_h == 6 ) var_h = 0      //H must be < 1
+//       var_i = int( var_h )             //Or ... var_i = floor( var_h )
+//       var_1 = V * ( 1 - S )
+//       var_2 = V * ( 1 - S * ( var_h - var_i ) )
+//       var_3 = V * ( 1 - S * ( 1 - ( var_h - var_i ) ) )
+//
+//       if      ( var_i == 0 ) { var_r = V     ; var_g = var_3 ; var_b = var_1 }
+//       else if ( var_i == 1 ) { var_r = var_2 ; var_g = V     ; var_b = var_1 }
+//       else if ( var_i == 2 ) { var_r = var_1 ; var_g = V     ; var_b = var_3 }
+//       else if ( var_i == 3 ) { var_r = var_1 ; var_g = var_2 ; var_b = V     }
+//       else if ( var_i == 4 ) { var_r = var_3 ; var_g = var_1 ; var_b = V     }
+//       else                   { var_r = V     ; var_g = var_1 ; var_b = var_2 }
+//
+//       R = var_r * 255                  //RGB results from 0 to 255
+//       G = var_g * 255
+//       B = var_b * 255
+//    }
 // -------------------------------------
 
 class PNM_Color {
@@ -82,11 +115,17 @@ public:
   int red() { return r; }
   int green() { return g; }
   int blue() { return b; }
+  int hue() { return r; }
+  int sat() { return g; }
+  int val() { return b; }
   int gray() { return (int)(r * 0.299 + g * 0.587 + b * 0.114); }
   bool bit() { return !((r == 0) && (g == 0) && (b == 0)); }
   void red(int nr) { r = nr; }
   void green(int ng) { g = ng; }
   void blue(int nb) { b = nb; }
+  void hue(int nr) { r = nr; }
+  void sat(int ng) { g = ng; }
+  void val(int nb) { b = nb; }
   void gray(int v) { r = v; g = v; b = v; }
   void bit(bool v) { r = (v ? 255 : 0); g = (v ? 255 : 0); b = (v ? 255 : 0); }
   void set(int nr, int ng, int nb) { r = nr; g = ng; b = nb; }
@@ -190,6 +229,14 @@ public:
   static const int typePBM;
   static const int typePGM;
   static const int typePPM;
+  
+  // image planes
+  static const int planeR;
+  static const int planeG;
+  static const int planeB;
+  static const int planeH;
+  static const int planeS;
+  static const int planeV;
 
   // interpolation methods
   static const int NEIGHBOR;
@@ -258,6 +305,7 @@ public:
   int       gray(double col, double row);
   PNM_Color color(int col, int row);
   PNM_Color color(double col, double row);
+  PNM_Color hsv(int col, int row);
 
   // set a pixel value
   bool      bit(int col, int row, bool val);
@@ -281,12 +329,15 @@ public:
   PNM &operator=(bool v);
 
   // other functions
-  void newImage(int t);
-  void deleteImage(int t);
+  void newImage(int type);
+  void deleteImage(int type);
   bool valid(const int col, const int row);
   bool valid(const double col, const double row);
   void convert(int type);
-  void clear();
+  void toHSV();
+  void plane(int plane);
+  void quantize(int plane, int levels);
+  void clear(int value);
 
 private:
   bool      _raw;

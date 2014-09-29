@@ -528,6 +528,102 @@ void Script::imgOverlayShapes() {
   s.push(item);
 }
 
+void Script::imgToHSV() {
+  if (s.size() < 1) {
+    cerr << "stack underflow" << endl;
+    return;
+  }
+  if (s.top().type != IMAGE) {
+    s.pop();
+    cerr << "invalid type, expected an image" << endl;
+    return;
+  }
+  image = s.top().i; s.pop();
+  image->im.toHSV();
+  Item item;
+  item.type = IMAGE;
+  item.i = image;
+  s.push(item);
+}
+
+void Script::imgPlane() {
+  if (s.size() < 2) {
+    cerr << "stack underflow" << endl;
+    return;
+  }
+  if (s.top().type != NUMBER) {
+    s.pop();
+    cerr << "invalid type, expected a number" << endl;
+    return;
+  }
+  int plane = s.top().n; s.pop();
+  if (s.top().type != IMAGE) {
+    s.pop();
+    cerr << "invalid type, expected an image" << endl;
+    return;
+  }
+  image = s.top().i; s.pop();
+  image->im.plane(plane);
+  Item item;
+  item.type = IMAGE;
+  item.i = image;
+  s.push(item);
+}
+
+void Script::imgClear() {
+  if (s.size() < 2) {
+    cerr << "stack underflow" << endl;
+    return;
+  }
+  if (s.top().type != NUMBER) {
+    s.pop();
+    cerr << "invalid type, expected a number" << endl;
+    return;
+  }
+  int value = s.top().n; s.pop();
+  if (s.top().type != IMAGE) {
+    s.pop();
+    cerr << "invalid type, expected an image" << endl;
+    return;
+  }
+  image = s.top().i; s.pop();
+  image->im.clear(value);
+  Item item;
+  item.type = IMAGE;
+  item.i = image;
+  s.push(item);
+}
+
+void Script::imgQuantize() {
+  if (s.size() < 3) {
+    cerr << "stack underflow" << endl;
+    return;
+  }
+  if (s.top().type != NUMBER) {
+    s.pop();
+    cerr << "invalid type, expected a number" << endl;
+    return;
+  }
+  int levels = s.top().n; s.pop();
+  if (s.top().type != NUMBER) {
+    s.pop();
+    cerr << "invalid type, expected a number" << endl;
+    return;
+  }
+  int plane = s.top().n; s.pop();
+  if (s.top().type != IMAGE) {
+    s.pop();
+    cerr << "invalid type, expected an image" << endl;
+    return;
+  }
+  image = s.top().i; s.pop();
+  image->im.quantize(plane, levels);
+  Item item;
+  item.type = IMAGE;
+  item.i = image;
+  s.push(item);
+}
+
 /*
 void Script::blur() {
 if(s.size() < 3) {

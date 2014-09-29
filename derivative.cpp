@@ -18,7 +18,6 @@ void Image::derivative(const int op) {
   PNM *temp = new PNM(im);
   int grays[9];
   PNM_Color color;
-  int hue, sat, val, alpha;
   int x, y, i, j;
   int value;
   int count;

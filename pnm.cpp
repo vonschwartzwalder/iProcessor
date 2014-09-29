@@ -28,6 +28,13 @@ const int PNM::typePBM = 1;
 const int PNM::typePGM = 2;
 const int PNM::typePPM = 3;
 
+const int PNM::planeR = 0;
+const int PNM::planeG = 1;
+const int PNM::planeB = 2;
+const int PNM::planeH = 0;
+const int PNM::planeS = 1;
+const int PNM::planeV = 2;
+
 const int PNM::NEIGHBOR = 0;
 const int PNM::LINEAR = 1;
 const int PNM::CUBIC = 2;
@@ -133,8 +140,8 @@ PNM::~PNM() {
   deleteImage(typeNON);
 }
 
-void PNM::newImage(int t) {
-  switch (t) {
+void PNM::newImage(int type) {
+  switch (type) {
   case typePBM:
     bit_image = new bool *[_cols];
     for (int i = 0; i < _cols; i++) {
@@ -161,8 +168,8 @@ void PNM::newImage(int t) {
   }
 }
 
-void PNM::deleteImage(int t) {
-  switch (t) {
+void PNM::deleteImage(int type) {
+  switch (type) {
   case typePBM:
     if (bit_image != NULL) {
       for (int i = 0; i < _cols; i++) {
@@ -443,6 +450,68 @@ PNM_Color PNM::color(int col, int row) {
   case typePPM:
     _color = color_image[col][row];
     break;
+  default:
+    ostringstream out;
+    out << "unknown type: " << _type;
+    throw PNM_Exception(out.str());
+  }
+  return _color;
+}
+
+PNM_Color PNM::hsv(int col, int row) {
+  if (!valid(col, row)) {
+    throw PNM_ArrayException(col, row);
+  }
+  double var_R, var_G, var_B;
+  double var_Min, var_Max, del_Max;
+  double H, S, V;
+  pair<double, double> result;
+  switch (_type) {
+  case typePBM:
+    _color.red((int)bit_image[col][row]);
+    _color.green(_color.red());
+    _color.blue(_color.red());
+    break;
+  case typePGM:
+    _color.red((int)gray_image[col][row]);
+    _color.green(_color.red());
+    _color.blue(_color.red());
+    break;
+  case typePPM:
+    _color = color_image[col][row];
+
+      // RGB to HSV
+      var_R = (_color.red() / 255.0);   //RGB from 0 to 255
+      var_G = (_color.green() / 255.0);
+      var_B = (_color.blue() / 255.0);
+
+      var_Min = MIN(var_R, var_G, var_B);
+      var_Max = MAX(var_R, var_G, var_B);
+      del_Max = var_Max - var_Min;  //Delta RGB value
+
+      V = var_Max;
+
+      if (del_Max == 0.0) { // This is a gray, no chroma...
+        H = 0.0;            // HSV results from 0 to 1
+        S = 0.0;
+      } else {            // Chromatic data...
+        S = del_Max / var_Max;
+
+        double del_R = (((var_Max - var_R) / 6.0) + (del_Max / 2.0)) / del_Max;
+        double del_G = (((var_Max - var_G) / 6.0) + (del_Max / 2.0)) / del_Max;
+        double del_B = (((var_Max - var_B) / 6.0) + (del_Max / 2.0)) / del_Max;
+
+        if      (var_R == var_Max) H = del_B - del_G;
+        else if (var_G == var_Max) H = (1.0 / 3.0) + del_R - del_B;
+        else if (var_B == var_Max) H = (2.0 / 3.0) + del_G - del_R;
+
+        if (H < 0.0) H += 1.0;
+        if (H > 1.0) H -= 1.0;
+      }
+      _color.red((int)(H * 255.0));
+      _color.green((int)(S * 255.0));
+      _color.blue((int)(V * 255.0));
+      break;
   default:
     ostringstream out;
     out << "unknown type: " << _type;
@@ -924,26 +993,26 @@ void PNM::drawLine(double scol, double srow, double ecol, double erow, PNM_Color
 }
 
 // clear the image
-void PNM::clear() {
+void PNM::clear(int value) {
   switch (_type) {
   case typePBM:
     for (int x = 0; x < _cols; x++) {
       for (int y = 0; y < _rows; y++) {
-        bit_image[x][y] = false;
+        bit_image[x][y] = value > 127 ? true : false;
       }
     }
     break;
   case typePGM:
     for (int x = 0; x < _cols; x++) {
       for (int y = 0; y < _rows; y++) {
-        gray_image[x][y] = 0;
+        gray_image[x][y] = value;
       }
     }
     break;
   case typePPM:
     for (int x = 0; x < _cols; x++) {
       for (int y = 0; y < _rows; y++) {
-        color_image[x][y] = PNM_Color(0, 0, 0);
+        color_image[x][y] = PNM_Color(value, value, value);
       }
     }
     break;
@@ -1038,6 +1107,97 @@ void PNM::convert(int type) {
     ostringstream out;
     out << "unknown type: " << _type;
     throw PNM_Exception(out.str());
+  }
+}
+
+void PNM::quantize(int plane, int levels) {
+  int k = 255 / levels;
+  switch (_type) {
+    case typePBM:
+      newImage(typePGM);
+      for (int x = 0; x < _cols; x++) {
+        for (int y = 0; y < _rows; y++) {
+          gray_image[x][y] = k * (gray(x, y) / k);
+        }
+      }
+      deleteImage(typePBM);
+      _type = typePGM;
+      break;
+    case typePGM:
+      for (int x = 0; x < _cols; x++) {
+        for (int y = 0; y < _rows; y++) {
+          gray_image[x][y] = k * (gray(x, y) / k);
+        }
+      }
+      break;
+    case typePPM:
+      newImage(typePGM);
+      for (int x = 0; x < _cols; x++) {
+        for (int y = 0; y < _rows; y++) {
+          switch(plane) {
+            case planeR:
+          gray_image[x][y] = k * (color(x, y).red() / k);
+              break;
+            case planeG:
+          gray_image[x][y] = k * (color(x, y).green() / k);
+              break;
+            case planeB:
+          gray_image[x][y] = k * (color(x, y).blue() / k);
+              break;
+          }
+        }
+      }
+      deleteImage(typePPM);
+      _type = typePGM;
+      break;
+  }
+}
+
+void PNM::plane(int plane) {
+  switch (_type) {
+    case typePBM:
+      newImage(typePGM);
+      for (int x = 0; x < _cols; x++) {
+        for (int y = 0; y < _rows; y++) {
+          gray_image[x][y] = gray(x, y);
+        }
+      }
+      deleteImage(typePBM);
+      _type = typePGM;
+      break;
+    case typePGM:
+      break;
+    case typePPM:
+      newImage(typePGM);
+      for (int x = 0; x < _cols; x++) {
+        for (int y = 0; y < _rows; y++) {
+          switch(plane) {
+            case planeR:
+          gray_image[x][y] = color(x, y).red();
+              break;
+            case planeG:
+          gray_image[x][y] = color(x, y).green();
+              break;
+            case planeB:
+          gray_image[x][y] = color(x, y).blue();
+              break;
+          }
+        }
+      }
+      deleteImage(typePPM);
+      _type = typePGM;
+      break;
+  }
+}
+
+void PNM::toHSV() {
+  if (_type != typePPM) {
+    return;
+  }
+  for (int x = 0; x < _cols; x++) {
+    for (int y = 0; y < _rows; y++) {
+      color_image[x][y] = hsv(x, y);
+    }
   }
 }
 
