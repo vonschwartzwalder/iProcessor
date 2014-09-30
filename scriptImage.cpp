@@ -498,23 +498,13 @@ void Script::imgFindShapes() {
   item1.type = IMAGE;
   item1.i = image;
   s.push(item1);
-  Item item2;
-  item2.type = SHAPES;
-  item2.sd = image->dictionary;
-  s.push(item2);
 }
 
 void Script::imgOverlayShapes() {
-  if (s.size() < 2) {
+  if (s.size() < 1) {
     cerr << "stack underflow" << endl;
     return;
   }
-  if (s.top().type != SHAPES) {
-    s.pop();
-    cerr << "invalid type, expected a dictionary" << endl;
-    return;
-  }
-  map<unsigned int, Shape> depth = s.top().sd; s.pop();
   if (s.top().type != IMAGE) {
     s.pop();
     cerr << "invalid type, expected an image" << endl;

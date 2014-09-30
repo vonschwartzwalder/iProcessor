@@ -36,6 +36,7 @@ public:
   friend istream &operator>>(istream &in, Shape &s);
   istream &read(istream &in);
   void read();
+  void writeSexpr(ostream &out);
   
   // methods
   bool contains(Shape &s);

@@ -49,6 +49,10 @@ ostream &Point::write(ostream &out) {
   return out;
 }
 
+void Point::writeSexpr(ostream &out) {
+  out << " (" << x << " . " << y << ")";
+}
+
 istream &Point::read(istream &in) {
   in >> *this;
   return in;

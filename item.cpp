@@ -315,15 +315,47 @@ ostream &operator<<(ostream &out, Item &i) {
   else if (i.type == IMAGE) {
     out << i.i;
   }
-  else if (i.type == SHAPES) {
-    map<unsigned int, Shape>::iterator iter;
-    out << "[ ";
-    for (iter = i.sd.begin(); iter != i.sd.end(); iter++) {
-      out << iter->first << ":" << iter->second << " ";
-    }
-    out << "]";
-  }
-
   return out;
+}
 
+void Item::writeSexpr(ostream &out)
+{
+  switch (type)
+  {
+  case BOOL:
+    out << (b ? "#t" : "#f");
+    break;
+  case STRING:
+    out << "\"" << s << "\"";
+    break;
+  case NUMBER:
+    out << n;
+    break;
+  case LIST:
+    out << "(";
+    for (list<Item>::iterator iter = l.begin(); iter != l.end(); iter++) {
+      out << " ";
+      (*iter).writeSexpr(out);
+    }
+    out << ")";
+    break;
+  case DICT:
+    out << "(";
+    for (map<string, Item>::iterator iter = d.begin(); iter != d.end(); iter++) {
+      out << " (";
+      out << "\"" << iter->first << "\"";
+      out << " . ";
+      iter->second.writeSexpr(out);
+      out << ")";
+    }
+    out << ")";
+    break;
+  case IMAGE:
+    i->writeSexpr(out);
+    break;
+  case PROC:
+  default:
+    out << "#(error unhandled-type " << to_string(type) << ")";
+    break;
+  }
 }

@@ -18,7 +18,6 @@ using namespace std;
 #define DICT   4
 #define PROC   5
 #define IMAGE  6
-#define SHAPES 7
 
 // Item class
 
@@ -33,6 +32,7 @@ public:
 
   // I/O
   friend ostream &operator<<(ostream &out, Item &i);
+  void writeSexpr(ostream &out);
 
   // methods
 
@@ -52,8 +52,6 @@ public:
   map<string, Item> d;
   list<Item> p;
   Image *i;
-  map<unsigned int, Shape> sd;
-
 };
 
 #endif

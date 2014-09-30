@@ -71,6 +71,7 @@ void Script::init() {
   m->p = &Script::makeProc; m->args = "{ ...";             f["makeProc"] = *m;
   m->p = &Script::dump;  m->args = "<stack|function|variable|operator>"; f["dump"] = *m;
   m->p = &Script::clear; m->args = "<stack|variable>";     f["clear"] = *m;
+  m->p = &Script::writeSexpr; m->args = "item";            f["writeSexpr"] = *m;
 
   // -------------------------------------
   // image functions

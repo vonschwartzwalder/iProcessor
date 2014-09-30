@@ -30,3 +30,20 @@ Image::Image(const string &filename) {
 // destructor
 Image::~Image() {
 }
+
+void Image::writeSexpr(ostream &out)
+{
+  // This should be the nodes of the image Graph.
+  out << "(graph" << endl;
+  out << " (nodes";
+  for (map<unsigned int, Shape>::iterator iter = dictionary.begin(); iter != dictionary.end(); iter++) {
+    out << " (";
+    out << iter->first;
+    out << " ";
+    iter->second.writeSexpr(out);
+    out << ")";
+  }
+  out << ")" << endl;
+  graph.writeSexpr(out);
+  out << ")" << endl;
+}

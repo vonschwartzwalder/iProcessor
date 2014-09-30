@@ -66,6 +66,7 @@ public:
   void println();
   void dump();
   void clear();
+  void writeSexpr();
   void dup();
   void swap();
   void roll();

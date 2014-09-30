@@ -184,6 +184,17 @@ void Script::clear() {
 
 }
 
+void Script::writeSexpr()
+{
+  if (s.size() < 1) {
+    cout << endl;
+    return;
+  }
+  Item item = s.top();
+  item.writeSexpr(cout);
+  s.pop();
+}
+
 // ------------------------------------------
 // list and dict access
 // ------------------------------------------

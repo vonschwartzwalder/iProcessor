@@ -29,6 +29,7 @@ public:
   friend istream &operator<<(istream &in, Point &p);
   istream &read(istream &in);
   void read();
+  void writeSexpr(ostream &out);
 
   // methods
 

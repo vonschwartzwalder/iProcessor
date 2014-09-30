@@ -604,3 +604,20 @@ void Graph::dump_bridge(ostream &out) {
   out << endl;
 }
 
+void Graph::writeSexpr(ostream &out)
+{
+  map<int, set<int> >::iterator miter;
+  set<int>::iterator siter;
+
+  out << " (edges";
+  for (miter = adjacency.begin(); miter != adjacency.end(); miter++) {
+    out << " (" << (*miter).first;
+    if (!(*miter).second.empty()) {
+      for (siter = (*miter).second.begin(); siter != (*miter).second.end(); siter++) {
+        out << " " << *siter;
+      }
+      out << ")";
+    }
+  }
+  out << ")" << endl;
+}

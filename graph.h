@@ -69,7 +69,8 @@ class Graph {
   void dump_bic(ostream &out);         // write biconnected components
   void dump_bridge(ostream &out);      // write bridges
   void dump_graph(ostream &out);       // write adjacency list for Mathematica
-  
+  void writeSexpr(ostream &out);
+
   // -------------------------------------
   // data
   // -------------------------------------

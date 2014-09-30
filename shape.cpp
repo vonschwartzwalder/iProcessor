@@ -241,6 +241,40 @@ istream &operator>>(istream &in, Shape &s) {
   return in;
 }
 
+void Shape::writeSexpr(ostream &out)
+{
+  list<Point>::iterator iter;
+  bool first_time = true;
+
+  out << "#(<shape>";
+  out << " " << label;
+  location.writeSexpr(out);
+  out << " " << color;
+  out << " " << area;
+  centroid.writeSexpr(out);
+  upper_left.writeSexpr(out);
+  lower_right.writeSexpr(out);
+
+  out << "#(<moments>";
+  for (int i = 0; i < 8; ++i)
+    out << " " << moments[i];
+  out << ")";
+
+  out << " " << flow;
+
+  // boundary
+  /*out << " (";
+  for (iter = points.begin(); iter != points.end(); iter++) {
+    if (first_time)
+      first_time = false;
+    else
+      out << " ";
+    (*iter).writeSexpr(out);
+  }
+  out << ")";*/
+  out << ")";
+}
+
 // -------------------------------------
 // get and set compare
 // -------------------------------------

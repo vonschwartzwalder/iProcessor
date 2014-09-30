@@ -67,6 +67,7 @@ public:
   // I/O
   PNM *loadImage(string name);
   bool saveImage(string name);
+  void writeSexpr(ostream &out);
 
   // morphology
   bool threshold(int t);
