@@ -230,7 +230,7 @@ int Image::threshold_otsu() {
   int gray;
   long NumPixels;
   long H[256];   //maximum gray values
-  double q1, mu[2], MU = 0.0, tempmu;
+  double q1, mu1, mu2, MU = 0.0, p;
   int Split;
   double sigmaB, Max, qt1, diff;
   int delta = 15;
@@ -254,19 +254,19 @@ int Image::threshold_otsu() {
   // -------------------------------------
 
   //Set initial conditions
-  q1 = H[0] / NumPixels;
-  mu[0] = 0;
-  mu[1] = MU - mu[0];    //mu2
-  diff = (mu[1] - mu[0]);
+  q1 = (double)H[0] / (double)NumPixels;
+  mu1 = 0;
+  mu2 = MU - mu1;    //mu2
+  diff = (mu2 - mu1);
   Max = q1 * (1 - q1) * (diff * diff);
   Split = 0;
 
-  for (t = 0; t < MAXGRAY; t++) {
-    tempmu = mu[0];
-    qt1 = q1 + H[t] / NumPixels;
-    mu[0] = (q1*tempmu + t *(H[t] / NumPixels)) / qt1;
-    mu[1] = (MU - qt1*mu[0]) / (1 - qt1);
-    diff = (mu[1] - mu[0]);
+  for (t = 1; t < MAXGRAY; t++) {
+    p = (double)H[t] / (double)NumPixels;
+    qt1 = q1 + p;
+    mu1 = (q1 * mu1 + t * p) / qt1;
+    mu2 = (MU - qt1 * mu1) / (1 - qt1);
+    diff = (mu2 - mu1);
     sigmaB = qt1 * (1 - qt1) * (diff * diff);
     q1 = qt1;
     if (sigmaB > Max) {

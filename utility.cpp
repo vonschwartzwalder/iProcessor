@@ -64,7 +64,6 @@ int *Image::calc_histogram(int plane) {
 
   int *data = new int[256];
 
-  int gray;
   int x, y;
   PNM_Color color;
 
@@ -90,10 +89,9 @@ int *Image::calc_histogram(int plane) {
       for (x = 0; x < im.cols(); x++) {
         if (im.valid(x, y)) {
           color = im.color(x, y);
-          gray = rgbToGray(color.red(), color.green(), color.blue());
           switch (plane) {
           case 0:  // gray
-            data[gray]++;
+            data[im.gray(x, y)]++;
             break;
           case 1:  // red
             data[color.red()]++;
