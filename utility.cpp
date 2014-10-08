@@ -174,7 +174,6 @@ double Image::calc_mean_gray() {
 //   assumes that the center location is sufficient
 // -------------------------------------
 int Image::calc_median_gray() {
-  int median = 0;
   int size = im.rows() * im.cols();
   vector<int> array;
   array.resize(size);
@@ -195,7 +194,6 @@ int Image::calc_median_gray() {
 // count values in image
 // -------------------------------------
 int Image::count_gray(int color) {
-  int pixel;
   int count = 0;
 
   // for each pixel

@@ -18,7 +18,7 @@ using namespace std;
 #include "image.h"
 
 
-void Image::flow(int iterations = 1, double step = 0.2, bool anchors = false, bool signs = false, bool topology = false) {
+void Image::flow(int iterations = 1, double step = 0.2) {
 
   // local variables
   double n, s, e, w, c, nw, ne, sw, se;

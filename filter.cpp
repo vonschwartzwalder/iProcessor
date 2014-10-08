@@ -171,8 +171,8 @@ void Image::filter(const int op) {
               colors[0].blue() - (2 * colors[3].blue()) - colors[6].blue();
 
             valueR = abs(Sxr) + abs(Syr);
-            valueG = abs(Sxg) + abs(Syb);
-            valueB = abs(Sxg) + abs(Syb);
+            valueG = abs(Sxg) + abs(Syg);
+            valueB = abs(Sxb) + abs(Syb);
             break;
           }
 

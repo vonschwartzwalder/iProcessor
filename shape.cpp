@@ -244,7 +244,7 @@ istream &operator>>(istream &in, Shape &s) {
 void Shape::writeSexpr(ostream &out)
 {
   list<Point>::iterator iter;
-  bool first_time = true;
+//  bool first_time = true;
 
   out << "#(<shape>";
   out << " " << label;

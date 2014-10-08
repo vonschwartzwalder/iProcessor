@@ -4,12 +4,16 @@
 
 // includes
 #include <iostream>
-#include <strstream>
+#include <sstream>
 #include <string>
 #include <list>
 #include <map>
+using namespace std;
 
 #include "item.h"
+
+#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+            ( std::ostringstream() << std::dec << x ) ).str()
 
 // ------------------------------------------------
 // constructor
@@ -41,9 +45,8 @@ Item &Item::operator+(Item &a) {
   // add a number and a string
   else if (type == NUMBER && a.type == STRING) {
     result->type = STRING;
-    strstream str;
-    str << n;
-    result->s = a.s + str.str();
+    string str = SSTR(n);
+    result->s = a.s + str;
   }
 
   // add a number and a list
@@ -62,9 +65,8 @@ Item &Item::operator+(Item &a) {
   // add a string and a number
   else if (type == STRING && a.type == NUMBER) {
     result->type = STRING;
-    strstream str;
-    str << a.n;
-    result->s = str.str() + s;
+    string str = SSTR(a.n);
+    result->s = str + s;
   }
 
   // add a string and a list
@@ -318,44 +320,42 @@ ostream &operator<<(ostream &out, Item &i) {
   return out;
 }
 
-void Item::writeSexpr(ostream &out)
-{
-  switch (type)
-  {
-  case BOOL:
-    out << (b ? "#t" : "#f");
-    break;
-  case STRING:
-    out << "\"" << s << "\"";
-    break;
-  case NUMBER:
-    out << n;
-    break;
-  case LIST:
-    out << "(";
-    for (list<Item>::iterator iter = l.begin(); iter != l.end(); iter++) {
-      out << " ";
-      (*iter).writeSexpr(out);
-    }
-    out << ")";
-    break;
-  case DICT:
-    out << "(";
-    for (map<string, Item>::iterator iter = d.begin(); iter != d.end(); iter++) {
-      out << " (";
-      out << "\"" << iter->first << "\"";
-      out << " . ";
-      iter->second.writeSexpr(out);
+void Item::writeSexpr(ostream &out) {
+  switch (type) {
+    case BOOL:
+      out << (b ? "#t" : "#f");
+      break;
+    case STRING:
+      out << "\"" << s << "\"";
+      break;
+    case NUMBER:
+      out << n;
+      break;
+    case LIST:
+      out << "(";
+      for (list<Item>::iterator iter = l.begin(); iter != l.end(); iter++) {
+        out << " ";
+        (*iter).writeSexpr(out);
+      }
       out << ")";
-    }
-    out << ")";
-    break;
-  case IMAGE:
-    i->writeSexpr(out);
-    break;
-  case PROC:
-  default:
-    out << "#(error unhandled-type " << to_string(type) << ")";
-    break;
+      break;
+    case DICT:
+      out << "(";
+      for (map<string, Item>::iterator iter = d.begin(); iter != d.end(); iter++) {
+        out << " (";
+        out << "\"" << iter->first << "\"";
+        out << " . ";
+        iter->second.writeSexpr(out);
+        out << ")";
+      }
+      out << ")";
+      break;
+    case IMAGE:
+      i->writeSexpr(out);
+      break;
+    case PROC:
+    default:
+      out << "#(error unhandled-type " << type << ")";
+      break;
   }
 }

@@ -49,7 +49,6 @@
 // ---------------------------------------------------------------------
 
 // script includes
-#include <strstream>
 #include <string>
 #include <cstdlib>
 #include <cstdio>

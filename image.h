@@ -92,7 +92,7 @@ public:
   // derivative
   void derivative(const int op);
   bool uvdec(double lambda, double delta, int iterations);
-  void flow(int iterations, double step, bool anchors, bool signs, bool topology);
+  void flow(int iterations, double step);
 
   // transform
   //void fft();

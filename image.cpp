@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <strstream>
 #include <list>
 #include <string>
 using namespace std;

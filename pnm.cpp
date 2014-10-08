@@ -1670,7 +1670,7 @@ int PNM::gray(double x, double y) {
 
     t = fracy;
 
-    double result = CatMull(t, x0, x1, x2, x2);
+    double result = CatMull(t, x0, x1, x2, x3);
     result = (result < 0) ? 0 : (result > 255) ? 255 : result;
     return (int)result;
   }
@@ -1866,7 +1866,7 @@ PNM_Color PNM::color(double x, double y) {
 
     t = fracy;
 
-    result = CatMull(t, x0, x1, x2, x2);
+    result = CatMull(t, x0, x1, x2, x3);
     g = (int)((result < 0) ? 0 : (result > 255) ? 255 : result);
 
     y0 = color(intx - 1, inty - 1).blue();
@@ -1899,7 +1899,7 @@ PNM_Color PNM::color(double x, double y) {
 
     t = fracy;
 
-    result = CatMull(t, x0, x1, x2, x2);
+    result = CatMull(t, x0, x1, x2, x3);
     b = (int)((result < 0) ? 0 : (result > 255) ? 255 : result);
 
     return PNM_Color(r, g, b);

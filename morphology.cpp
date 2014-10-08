@@ -225,9 +225,7 @@ int Image::threshold_ki() {
 // -------------------------------------
 int Image::threshold_otsu() {
   int x;
-  int y;
   int t;
-  int gray;
   long NumPixels;
   long H[256];   //maximum gray values
   double q1, mu1, mu2, MU = 0.0, p;

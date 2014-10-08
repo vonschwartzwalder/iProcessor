@@ -8,7 +8,6 @@
 // system includes
 #include <iostream>
 #include <fstream>
-#include <strstream>
 #include <string>
 #include <cstdlib>
 using namespace std;
@@ -23,7 +22,7 @@ using namespace std;
 // main
 // ---------------------------------------------------------------------
 
-int main(int argc, char **argv, char **envp) {
+int main(int argc, char **argv /*, char **envp */) {
 
   // local variables
   string programName;
@@ -35,8 +34,8 @@ int main(int argc, char **argv, char **envp) {
   streambuf *original_cout;
 
   // make the compiler happy, but remember I CAN get the environment
-  char **e;
-  e = envp;
+//  char **e;
+//  e = envp;
 
   Script script;
   script.init();
