@@ -6,7 +6,7 @@
 CC        = gcc
 CXX       = g++
 CFLAGS    = -pipe -Wall -W 
-CXXFLAGS  = -pipe -Wall -W 
+CXXFLAGS  = -pipe -Wall -W -std=c++11
 INCPATH   = -I.
 LINK      = g++
 LDFLAGS   = 
@@ -90,7 +90,7 @@ $(TARGET):  $(OBJECTS)
 	$(LINK) $(LDFLAGS) -o $(TARGET) $(OBJECTS) $(LIBPATH) $(LIBS) 
 
 %.o: %.cpp $(THISFILE) $(HEADERS)
-	$(CXX) -c $(OPTIMIZATION_CFLAGS) $(CFLAGS) $(OTHER_CFLAGS) $(INCPATH) $< 
+	$(CXX) -c $(OPTIMIZATION_CFLAGS) $(CXXFLAGS) $(OTHER_CFLAGS) $(INCPATH) $< 
 
 .PHONY: clean
 clean:
