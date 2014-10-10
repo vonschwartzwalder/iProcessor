@@ -1,0 +1,18 @@
+# -----------------------------------------
+# find tubes
+# -----------------------------------------
+'00.ppm' imgWrite
+imgToHSV
+'01.ppm' imgWrite
+2 imgPlane
+'02.ppm' imgWrite
+imgAutoThresholdOtsu
+'03.ppm' imgWrite
+#3 imgOpen
+#3 imgClose
+'04.ppm' imgWrite
+imgFindShapes
+'05.ppm' imgWrite
+imgOverlayShapes
+'06.ppm' imgWrite
+writeSexpr
