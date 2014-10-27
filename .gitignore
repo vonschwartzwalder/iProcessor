@@ -1,7 +1,9 @@
 *.ilk
 *.o
 *.opensdf
+*.out
 *.pdb
+*.ppm
 *.sdf
 *.suo
 *.vcxproj.filters
