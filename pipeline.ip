@@ -1,0 +1,35 @@
+# -------------------------------------
+# iProcessor script
+# -------------------------------------
+
+# save test image name
+'/home/dvs/Pictures/PP4/tubes.ppm' image def
+
+# open test image
+image imgRead
+#'0.ppm' imgWrite
+
+# convert to HSV
+imgToHSV
+#'1.ppm' imgWrite
+
+# get the V plane
+2 imgPlane
+#'2.ppm' imgWrite
+
+# threshold
+imgAutoThresholdOtsu
+#'3.ppm' imgWrite
+
+# clean up
+#3 imgOpen
+#3 imgClose
+#'4.ppm' imgWrite
+
+# find components
+imgFindShapes
+imgOverlayShapes
+#'5.ppm' imgWrite
+
+# write components
+writeSexpr
