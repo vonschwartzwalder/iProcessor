@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -------------------------------------
 # iProcessor script
 # -------------------------------------
@@ -32,4 +33,23 @@ imgOverlayShapes
 #'5.ppm' imgWrite
 
 # write components
+=======
+# -----------------------------------------
+# find tubes
+# -----------------------------------------
+'00.ppm' imgWrite
+imgToHSV
+'01.ppm' imgWrite
+2 imgPlane
+'02.ppm' imgWrite
+imgAutoThresholdOtsu
+'03.ppm' imgWrite
+#3 imgOpen
+#3 imgClose
+'04.ppm' imgWrite
+imgFindShapes
+'05.ppm' imgWrite
+imgOverlayShapes
+'06.ppm' imgWrite
+>>>>>>> ad08f59fdf4bca5740af03c96130308c7609d74d
 writeSexpr
