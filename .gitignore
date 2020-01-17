@@ -1,51 +1,35 @@
-<<<<<<< HEAD
-*.ilk
+# Mac
+.DS_Store
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
 *.o
-*.opensdf
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
 *.out
-*.pdb
-*.ppm
-*.sdf
-*.suo
-*.vcxproj.filters
-*.vcxproj.user
-.gdb_history
-Debug/
-Release/
-build/
-dist/
-doc/
-iProcessor
-iProcessor.exe
-nbproject/
-test/
-=======
-*.ilk
-*.o
-*.opensdf
-*.pdb
-*.sdf
-*.suo
-*.vcxproj.filters
-*.vcxproj.user
-.gdb_history
-Debug/
-Release/
-build/
-dist/
-doc/
-iProcessor
-iProcessor.exe
-nbproject/
-test/
-/00.ppm
-/01.ppm
-/02.ppm
-/06.ppm
-/04.ppm
-/05.ppm
-/03.ppm
-/montage.png
-/pipeline.out
-/images/
->>>>>>> ad08f59fdf4bca5740af03c96130308c7609d74d
+*.app
