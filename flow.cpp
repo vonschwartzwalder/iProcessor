@@ -30,9 +30,8 @@ void Image::flow(int iterations = 1, double step = 0.2) {
   int x, y, i, j, it;
 
   // get size of image
-  int rows, cols;
-  rows = im.rows();
-  cols = im.cols();
+  int rows = im.rows();
+  int cols = im.cols();
 
   // -------------------------------------
   // copy image to array

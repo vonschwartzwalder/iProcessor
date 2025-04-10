@@ -334,7 +334,7 @@ void Graph::gcolor_dfs(int snode) {
       {
         // at each node.
         gcolor++;
-        //dictionary[node].gcolor=(gcolor) % 4;
+        // dictionary[node].gcolor=(gcolor) % 4;
       }
 
     }

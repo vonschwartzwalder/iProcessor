@@ -464,8 +464,7 @@ PNM_Color PNM::hsv(int col, int row) {
   }
   double var_R, var_G, var_B;
   double var_Min, var_Max, del_Max;
-  double H, S, V;
-  pair<double, double> result;
+  double H = 0, S = 0, V = 0;
   switch (_type) {
   case typePBM:
     _color.red((int)bit_image[col][row]);
@@ -505,8 +504,8 @@ PNM_Color PNM::hsv(int col, int row) {
         else if (var_G == var_Max) H = (1.0 / 3.0) + del_R - del_B;
         else if (var_B == var_Max) H = (2.0 / 3.0) + del_G - del_R;
 
-        if (H < 0.0) H += 1.0;
-        if (H > 1.0) H -= 1.0;
+        H = (H < 0.0) ? H + 1.0 : H;
+        H = (H > 1.0) ? H - 1.0 : H;
       }
       _color.red((int)(H * 255.0));
       _color.green((int)(S * 255.0));

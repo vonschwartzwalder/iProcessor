@@ -243,9 +243,17 @@ void Script::at() {
     // find item
     std::list<Item>::iterator iter;
     unsigned int cnt = 0;
-    for (iter = s.top().l.begin(), cnt = 0;
-      iter != s.top().l.end(), cnt != index;
-      iter++, cnt++) {
+    // find the item in the list
+    for (iter = s.top().l.begin(); iter != s.top().l.end(); iter++) {
+      if (cnt == index) {
+        break;
+      }
+      cnt++;
+    }
+    if (cnt != index) {
+      s.pop();
+      cerr << "index out of range" << endl;
+      return;
     }
 
     // create a new item

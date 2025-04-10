@@ -6,7 +6,7 @@
 CC        = gcc
 CXX       = g++
 CFLAGS    = -pipe -Wall -W 
-CXXFLAGS  = -pipe -Wall -W -std=c++11
+CXXFLAGS  = -pipe -Wall -W -std=c++17
 INCPATH   = -I.
 LINK      = g++
 LDFLAGS   = 
@@ -62,10 +62,10 @@ SNAMES = \
 	uvdec \
 	writeDB \
 
-SOURCES       = $(addsuffix .cpp, $(SNAMES))
-HEADERS       = $(addsuffix .h, $(HNAMES))
-OBJECTS       = $(addsuffix .o, $(SNAMES))
-TARGET   = iProcessor
+SOURCES = $(addsuffix .cpp, $(SNAMES))
+HEADERS = $(addsuffix .h, $(HNAMES))
+OBJECTS = $(addsuffix .o, $(SNAMES))
+TARGET  = iProcessor
 
 # Implicit rules
 
