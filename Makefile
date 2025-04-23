@@ -3,12 +3,12 @@
 # --------------------------------------------------------
 
 # Compiler, tools and options
-CC        = gcc
-CXX       = g++
+CC        = clang
+CXX       = clang++
 CFLAGS    = -pipe -Wall -W 
 CXXFLAGS  = -pipe -Wall -W -std=c++17
 INCPATH   = -I.
-LINK      = g++
+LINK      = clang++
 LDFLAGS   = 
 LIBPATH   = 
 DEL_FILE  = rm -f
